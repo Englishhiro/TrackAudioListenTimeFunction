@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Tracker</title>
+</head>
+<body>
+    <h1>Audio Tracker</h1>
+    <audio id="audio1" controls>
+        <source src="https://github.com/Englishhiro/AudioFolder/1.wav" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+    <br>
+    <audio id="audio2" controls>
+        <source src="https://github.com/Englishhiro/AudioFolder/3.wav" type="audio/wav">
+        Your browser does not support the audio element.
+    </audio>
+    <br>
+    <audio id="audio3" controls>
+        <source src="https://github.com/Englishhiro/AudioFolder/4.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    
+    <script>
+        function logListeningData(audioId, user, audioFile, duration) {
+            const url = 'YOUR_WEB_APP_URL';
+            const data = {
+                timestamp: new Date().toISOString(),
+                user: user,
+                audioFile: audioFile,
+                duration: duration
+            };
+            
+            fetch(url, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(response => {
+                console.log('Data logged successfully:', data);
+            }).catch(error => {
+                console.error('Error logging data:', error);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const user = 'User1'; // Replace with dynamic user info if needed
+
+            const audioElements = document.querySelectorAll('audio');
+            audioElements.forEach(audio => {
+                let startTime;
+                audio.addEventListener('play', () => {
+                    startTime = new Date().getTime();
+                });
+
+                audio.addEventListener('pause', () => {
+                    if (startTime) {
+                        const duration = (new Date().getTime() - startTime) / 1000;
+                        logListeningData(audio.id, user, audio.querySelector('source').src, duration);
+                        startTime = null;
+                    }
+                });
+
+                audio.addEventListener('ended', () => {
+                    if (startTime) {
+                        const duration = (new Date().getTime() - startTime) / 1000;
+                        logListeningData(audio.id, user, audio.querySelector('source').src, duration);
+                        startTime = null;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
