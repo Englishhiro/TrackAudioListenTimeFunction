@@ -58,6 +58,56 @@
       margin: 20px 0;
     }
 
+    .track-info {
+      text-align: center;
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #e8f5e9;
+      border: 1px solid #4CAF50;
+      border-radius: 5px;
+    }
+
+    .search-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+      width: 200px;
+    }
+
+    #result {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .incorrect {
+      color: red;
+      font-weight: bold;
+    }
+
+    .correct-with-tick {
+      color: green;
+      display: inline-block;
+    }
+
+    .correct-with-tick::after {
+      content: ' ✔';
+      color: green;
+      font-weight: bold;
+    }
+
     footer {
       text-align: center;
       margin-top: auto;
@@ -65,6 +115,10 @@
       font-size: 14px;
       color: #555;
       background-color: transparent;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
@@ -82,6 +136,19 @@
     <button onclick="showNext()"><i class="fa fa-arrow-right"></i></button>
     <button onclick="jumpForward()"><i class="fa fa-fast-forward"></i></button>
   </div>
+
+  <div class="track-info" id="trackInfo"></div>
+
+  <div class="search-container">
+    <input type="text" id="userInput" placeholder="Enter your text here">
+    <button onclick="checkAnswer()">Submit</button>
+  </div>
+
+  <div class="hidden">
+    <textarea id="userHistory" rows="5"></textarea>
+  </div>
+
+  <div id="result"></div>
 
   <footer>
     An intellectual product of Do Thanh Hung
@@ -106,10 +173,11 @@
       if (index >= 0 && index < values.length) {
         const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
         const audioUrl = values[index][1];
+        const trackInfo = values[index][4]; // Assuming the content for the box is in column E (index 4)
         document.getElementById('trackId').innerText = trackId;
-        const audioPlayer = document.getElementById('audioPlayer');
-        audioPlayer.src = audioUrl;
-        audioPlayer.play();
+        document.getElementById('audioPlayer').src = audioUrl;
+        document.getElementById('trackInfo').innerText = trackInfo;
+        document.getElementById('audioPlayer').play();
       }
     }
 
@@ -135,6 +203,39 @@
     function jumpBackward() {
       currentIndex = Math.max(currentIndex - 10, 0);
       updateAudioTrack(currentIndex);
+    }
+
+    function checkAnswer() {
+      const userInput = document.getElementById('userInput').value.trim();
+      const answerKey = values[currentIndex][5].replace(/[.,!?]/g, ''); // Assuming the answer key is in column F (index 5)
+      const resultElement = document.getElementById('result');
+      const userHistory = document.getElementById('userHistory');
+
+      // Store user input in history
+      userHistory.value += userInput.replace(/[.,!?]/g, '') + ' ';
+      document.getElementById('userInput').value = ''; // Clear the input box
+
+      // Compare each word in history with the answer key
+      const historyWords = userHistory.value.trim().split(' ');
+      const answerWords = answerKey.split(' ');
+      let allCorrect = true;
+
+      const highlightedWords = historyWords.map((word, index) => {
+        if (answerWords.includes(word)) {
+          return `<span class="correct">${word}</span>`;
+        } else {
+          allCorrect = false;
+          return `<span class="incorrect">${word}</span>`;
+        }
+      });
+
+      resultElement.innerHTML = highlightedWords.join(' ');
+
+      // Check if all words are correct
+      if (allCorrect && historyWords.length >= answerWords.length) {
+        resultElement.innerHTML = '<span class="correct-with-tick">' + userHistory.value.trim() + '</span>';
+        resultElement.innerHTML += '<div class="correct">Good job! You are correct!</div>';
+      }
     }
   </script>
 
