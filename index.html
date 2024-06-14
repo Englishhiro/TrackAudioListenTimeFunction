@@ -1,78 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Tracker</title>
-	 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Player</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:last-child {
+      margin-right: 0;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    button i {
+      margin-right: 8px;
+    }
+
+    #audioPlayer {
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: auto;
+      padding: 10px 0;
+      font-size: 14px;
+      color: #555;
+      background-color: transparent;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>Audio Tracker</h1>
-    <audio id="audio1" controls>
-        <source src="https://englishhiro.github.io/AudioFolder/1.wav" type="audio/wav">
-        Your browser does not support the audio element.
-    </audio>
-    <br>
+  <h1>Audio Player</h1>
+  <div id="audioContainer">
+    <h2>Audio Track <span id="trackId"></span></h2>
+    <audio id="audioPlayer" controls></audio>
+  </div>
 
-    <br>
-    <audio id="audio3" controls>
-        <source src="https://englishhiro.github.io/AudioFolder/4.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+  <div class="button-container">
+    <button onclick="jumpBackward()"><i class="fa fa-fast-backward"></i></button>
+    <button onclick="showPrevious()"><i class="fa fa-arrow-left"></i></button>
+    <button onclick="showNext()"><i class="fa fa-arrow-right"></i></button>
+    <button onclick="jumpForward()"><i class="fa fa-fast-forward"></i></button>
+  </div>
 
-    </div>
-    <script>
-        function logListeningData(audioId, user, audioFile, duration) {
-            const url = 'https://script.google.com/macros/s/AKfycbwB8fv1zLSdqthF8uph-hSKg0zasrqHbGhX1KDN4Q8M-OVrltlGkYeG8uMfP0PBG97e/exec';
-            const data = {
-                timestamp: new Date().toISOString(),
-                user: user,
-                audioFile: audioFile,
-                duration: duration
-            };
-            
-            fetch(url, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            }).then(response => {
-                console.log('Data logged successfully:', data);
-            }).catch(error => {
-                console.error('Error logging data:', error);
-            });
+  <footer>
+    An intellectual product of Do Thanh Hung
+  </footer>
+
+  <script>
+    const baseUrl = "https://script.google.com/macros/s/AKfycbyVhhYDfbVrrog-R8jVZPN9eHwq-XcR24ZrWBKdgkHNvD_Pt8l2Y8fIqgdIzdepuu7S/exec";
+    let values = [];
+    let currentIndex = 0;
+
+    fetch(baseUrl)
+      .then(res => res.json())
+      .then(data => {
+        values = data.values.slice(1); // Skip the first row (title row)
+        if (values.length > 0) {
+          updateAudioTrack(currentIndex); // Load the first track immediately
         }
+      })
+      .catch(err => console.error('Error fetching data:', err));
 
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const user = 'User1'; // Replace with dynamic user info if needed
+    function updateAudioTrack(index) {
+      if (index >= 0 && index < values.length) {
+        const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
+        const audioUrl = values[index][1];
+        document.getElementById('trackId').innerText = trackId;
+        const audioPlayer = document.getElementById('audioPlayer');
+        audioPlayer.src = audioUrl;
+        audioPlayer.play();
+      }
+    }
 
-            const audioElements = document.querySelectorAll('audio');
-            audioElements.forEach(audio => {
-                let startTime;
-                audio.addEventListener('play', () => {
-                    startTime = new Date().getTime();
-                });
+    function showNext() {
+      if (currentIndex < values.length - 1) {
+        currentIndex++;
+        updateAudioTrack(currentIndex);
+      }
+    }
 
-                audio.addEventListener('pause', () => {
-                    if (startTime) {
-                        const duration = (new Date().getTime() - startTime) / 1000;
-                        logListeningData(audio.id, user, audio.querySelector('source').src, duration);
-                        startTime = null;
-                    }
-                });
+    function showPrevious() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateAudioTrack(currentIndex);
+      }
+    }
 
-                audio.addEventListener('ended', () => {
-                    if (startTime) {
-                        const duration = (new Date().getTime() - startTime) / 1000;
-                        logListeningData(audio.id, user, audio.querySelector('source').src, duration);
-                        startTime = null;
-                    }
-                });
-            });
-        });
+    function jumpForward() {
+      currentIndex = Math.min(currentIndex + 10, values.length - 1);
+      updateAudioTrack(currentIndex);
+    }
 
-   </script>
+    function jumpBackward() {
+      currentIndex = Math.max(currentIndex - 10, 0);
+      updateAudioTrack(currentIndex);
+    }
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </body>
+
 </html>
