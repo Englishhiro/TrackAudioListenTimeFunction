@@ -302,91 +302,95 @@ function updatePlayPauseIcon() {
     playPauseIcon.classList.add('fa-pause');
   }
 }
-
-function handleInlineInput(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault(); // Prevent form submission or other default actions
-    checkInlineAnswer(event.target);
-  }
-}
-
 const attemptCount = {};
 
-function checkInlineAnswer(inputElement) {
-  const position = parseInt(inputElement.dataset.position);
-  const userAnswer = inputElement.value.trim().toLowerCase();
-  const answerKey = values[currentIndex][5]; // Assuming the answer key is in the 6th column
-  let correct = false;
-
-  if (!attemptCount[position]) {
-    attemptCount[position] = 0;
-  }
-
-  const matches = answerKey.match(/(\d+)\.\s*([^\d]+)/g);
-
-  if (matches) {
-    matches.forEach(entry => {
-      const match = entry.trim().match(/^(\d+)\.\s*([^\d]+)/);
-      if (match) {
-        const pos = parseInt(match[1]);
-        const word = match[2].trim().toLowerCase();
-
-        if (word === userAnswer && pos === position) {
-          inputElement.classList.add('correct');
-          inputElement.value = word + ' ✔';
-          inputElement.setAttribute('readonly', true);
-          correct = true;
-          attemptCount[position] = 0; // Reset the attempt count for the correct position
-        }
-      }
+function formatTrackInfo(trackInfo) {
+    return trackInfo.replace(/\b(\d+)\._{3}\b/g, match => {
+      const position = match.split('.')[0];
+      return `<input type="text" class="inline-input" data-position="${position}" placeholder="${match}" onkeydown="handleInlineInput(event)" onfocusout="checkInlineAnswer(this)">`;
     });
   }
 
-  if (!correct) {
-    attemptCount[position]++;
-    if (attemptCount[position] > 5) {
-      document.getElementById('result').innerHTML = `Try: ${matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim()}`;
-    } else {
-      inputElement.classList.add('incorrect-with-x');
-      inputElement.value = userAnswer + ' ✘';
-      inputElement.setAttribute('readonly', true);
-      inputElement.addEventListener('click', function clearInput() {
-        inputElement.value = '';
-        inputElement.classList.remove('incorrect-with-x');
-        inputElement.removeAttribute('readonly');
-        inputElement.removeEventListener('click', clearInput);
+  function handleInlineInput(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Prevent form submission or other default actions
+      checkInlineAnswer(event.target);
+    }
+  }
+
+  function checkInlineAnswer(inputElement) {
+    const position = parseInt(inputElement.dataset.position);
+    const userAnswer = inputElement.value.trim().toLowerCase();
+    const answerKey = values[currentIndex][5]; // Assuming the answer key is in the 6th column
+    let correct = false;
+
+    if (!attemptCount[position]) {
+      attemptCount[position] = 0;
+    }
+
+    const matches = answerKey.match(/(\d+)\.\s*([^\d]+)/g);
+
+    if (matches) {
+      matches.forEach(entry => {
+        const match = entry.trim().match(/^(\d+)\.\s*([^\d]+)/);
+        if (match) {
+          const pos = parseInt(match[1]);
+          const word = match[2].trim().toLowerCase();
+
+          if (word === userAnswer && pos === position) {
+            inputElement.classList.add('correct');
+            inputElement.value = word + ' ✔';
+            inputElement.setAttribute('readonly', true);
+            correct = true;
+            attemptCount[position] = 0; // Reset the attempt count for the correct position
+          }
+        }
       });
     }
-  }
 
-  if (correct) {
-    moveToNextInput();
-    checkAllInputsCorrect();
-  }
-}
-
-function moveToNextInput() {
-  const nextInput = document.querySelector('.inline-input:not([readonly])');
-  if (nextInput) {
-    nextInput.focus();
-  }
-}
-
-function checkAllInputsCorrect() {
-  const allInputs = document.querySelectorAll('.inline-input');
-  let allCorrect = true;
-  allInputs.forEach(input => {
-    if (!input.hasAttribute('readonly')) {
-      allCorrect = false;
+    if (!correct) {
+      attemptCount[position]++;
+      if (attemptCount[position] > 5) {
+        document.getElementById('result').innerHTML = `Try: ${matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim()}`;
+      } else {
+        inputElement.classList.add('incorrect-with-x');
+        inputElement.value = userAnswer + ' ✘';
+        inputElement.setAttribute('readonly', true);
+        inputElement.addEventListener('click', function clearInput() {
+          inputElement.value = '';
+          inputElement.classList.remove('incorrect-with-x');
+          inputElement.removeAttribute('readonly');
+          inputElement.removeEventListener('click', clearInput);
+        });
+      }
     }
-  });
 
-  if (allCorrect) {
-    document.getElementById('result').innerHTML = "Good job! Let's move to the next track!";
+    if (correct) {
+      moveToNextInput();
+      checkAllInputsCorrect();
+    }
   }
-}
 
+  function moveToNextInput() {
+    const nextInput = document.querySelector('.inline-input:not([readonly])');
+    if (nextInput) {
+      nextInput.focus();
+    }
+  }
 
+  function checkAllInputsCorrect() {
+    const allInputs = document.querySelectorAll('.inline-input');
+    let allCorrect = true;
+    allInputs.forEach(input => {
+      if (!input.hasAttribute('readonly')) {
+        allCorrect = false;
+      }
+    });
+
+    if (allCorrect) {
+      document.getElementById('result').innerHTML = "Good job! Let's move to the next track!";
+    }
+  }
 
 function incrementPosition() {
   currentPosition++;
