@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,230 +15,391 @@
       flex-direction: column;
       min-height: 100vh;
     }
+css
+Copy code
+h1 {
+  text-align: center;
+  color: #4CAF50;
+}
 
-    h1 {
-      text-align: center;
-      color: #4CAF50;
-    }
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
 
-    .button-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 15px;
-    }
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  height: 40px;
+  padding: 10px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
 
-    button {
-      display: flex;
-      align-items: center;
-      padding: 10px 20px;
-      font-size: 16px;
-      color: #fff;
-      background-color: #4CAF50;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-right: 10px;
-    }
+button:last-child {
+  margin-right: 0;
+}
 
-    button:last-child {
-      margin-right: 0;
-    }
+button:hover {
+  background-color: #45a049;
+}
 
-    button:hover {
-      background-color: #45a049;
-    }
+#audioPlayer {
+  width: 100%;
+  margin: 20px 0;
+}
 
-    button i {
-      margin-right: 8px;
-    }
+.track-info {
+  text-align: center;
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #e8f5e9;
+  border: 1px solid #4CAF50;
+  border-radius: 5px;
+}
 
-    #audioPlayer {
-      width: 100%;
-      margin: 20px 0;
-    }
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  align-items: center;
+}
 
-    .track-info {
-      text-align: center;
-      margin: 20px 0;
-      padding: 10px;
-      background-color: #e8f5e9;
-      border: 1px solid #4CAF50;
-      border-radius: 5px;
-    }
+input[type="text"] {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  width: 200px;
+}
 
-    .search-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
+.position-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 10px;
+}
 
-    input[type="text"] {
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-right: 10px;
-      width: 200px;
-    }
+.position-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  font-size: 16px;
+  margin: 5px 0;
+  font-weight: bold;
+  color: navy;
+}
 
-    #result {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 16px;
-    }
+.arrow {
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
+}
 
-    .correct {
-      color: green;
-    }
+#result {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 16px;
+  white-space: pre-wrap;
+}
 
-    .incorrect {
-      color: red;
-      font-weight: bold;
-    }
+.correct {
+  color: green;
+  display: inline-block;
+  font-weight: bold;
+}
 
-    .correct-with-tick {
-      color: green;
-      display: inline-block;
-    }
+.correct::after {
+  content: ' ✔';
+  color: green;
+  font-weight: bold;
+}
 
-    .correct-with-tick::after {
-      content: ' ✔';
-      color: green;
-      font-weight: bold;
-    }
+.incorrect-with-x {
+  color: red;
+  display: inline-block;
+  font-weight: bold;
+}
 
-    footer {
-      text-align: center;
-      margin-top: auto;
-      padding: 10px 0;
-      font-size: 14px;
-      color: #555;
-      background-color: transparent;
-    }
+.incorrect-with-x::after {
+  content: ' ✘';
+  color: red;
+  font-weight: bold;
+}
 
-    .hidden {
-      display: none;
-    }
+.inline-input {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  background-color: transparent;
+  width: 60px;
+  text-align: center;
+  font-size: 16px;
+  outline: none;
+}
+
+.inline-input.correct {
+  color: green;
+  font-weight: bold;
+}
+
+.bold-navy {
+  font-weight: bold;
+  color: navy;
+}
+
+footer {
+  text-align: center;
+  margin-top: auto;
+  padding: 10px 0;
+  font-size: 14px;
+  color: #555;
+  background-color: transparent;
+}
+
+.hidden {
+  display: none;
+}
   </style>
 </head>
-
 <body>
   <h1>Audio Player</h1>
   <div id="audioContainer">
     <h2>Audio Track <span id="trackId"></span></h2>
     <audio id="audioPlayer" controls></audio>
   </div>
-
   <div class="button-container">
     <button onclick="jumpBackward()"><i class="fa fa-fast-backward"></i></button>
     <button onclick="showPrevious()"><i class="fa fa-arrow-left"></i></button>
+    <button onclick="togglePlayPause()"><i class="fa fa-play" id="playPauseIcon"></i></button>
     <button onclick="showNext()"><i class="fa fa-arrow-right"></i></button>
     <button onclick="jumpForward()"><i class="fa fa-fast-forward"></i></button>
   </div>
-
   <div class="track-info" id="trackInfo"></div>
-
   <div class="search-container">
+    <div class="position-container">
+      <span class="arrow" onclick="incrementPosition()">▲</span>
+      <div class="position-box" id="positionBox">1</div>
+      <span class="arrow" onclick="decrementPosition()">▼</span>
+    </div>
     <input type="text" id="userInput" placeholder="Enter your text here">
     <button onclick="checkAnswer()">Submit</button>
   </div>
-
   <div class="hidden">
     <textarea id="userHistory" rows="5"></textarea>
   </div>
-
   <div id="result"></div>
-
   <footer>
     An intellectual product of Do Thanh Hung
   </footer>
-
   <script>
-    const baseUrl = "https://script.google.com/macros/s/AKfycbyVhhYDfbVrrog-R8jVZPN9eHwq-XcR24ZrWBKdgkHNvD_Pt8l2Y8fIqgdIzdepuu7S/exec";
-    let values = [];
-    let currentIndex = 0;
+const baseUrl = "https://script.google.com/macros/s/AKfycbyVhhYDfbVrrog-R8jVZPN9eHwq-XcR24ZrWBKdgkHNvD_Pt8l2Y8fIqgdIzdepuu7S/exec";
+let values = [];
+let currentIndex = 0;
+let currentPosition = 1; // Track the current position
 
-    fetch(baseUrl)
-      .then(res => res.json())
-      .then(data => {
-        values = data.values.slice(1); // Skip the first row (title row)
-        if (values.length > 0) {
-          updateAudioTrack(currentIndex); // Load the first track immediately
+fetch(baseUrl)
+  .then(res => res.json())
+  .then(data => {
+    values = data.values.slice(1); // Skip the first row (title row)
+    if (values.length > 0) {
+      updateAudioTrack(currentIndex); // Load the first track immediately
+    }
+  })
+  .catch(err => console.error('Error fetching data:', err));
+
+function updateAudioTrack(index) {
+  if (index >= 0 && index < values.length) {
+    const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
+    const audioUrl = values[index][1];
+    const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
+    document.getElementById('trackId').innerText = trackId;
+    document.getElementById('audioPlayer').src = audioUrl;
+    document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
+    document.getElementById('audioPlayer').play();
+    resetInput();
+    updatePlayPauseIcon(); // Ensure the play/pause icon is correct
+  }
+}
+
+function formatTrackInfo(trackInfo) {
+  return trackInfo.replace(/\b(\d+)\._{3}\b/g, match => {
+    const position = match.split('.')[0];
+    return `<input type="text" class="inline-input" data-position="${position}" placeholder="${match}" onkeydown="handleInlineInput(event)">`;
+  });
+}
+
+function showNext() {
+  if (currentIndex < values.length - 1) {
+    currentIndex++;
+    resetPosition(); // Reset the position counter when moving to the next track
+    updateAudioTrack(currentIndex);
+  }
+}
+
+function showPrevious() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    resetPosition(); // Reset the position counter when moving to the previous track
+    updateAudioTrack(currentIndex);
+  }
+}
+
+function jumpForward() {
+  currentIndex = Math.min(currentIndex + 10, values.length - 1);
+  resetPosition(); // Reset the position counter when jumping forward
+  updateAudioTrack(currentIndex);
+}
+
+function jumpBackward() {
+  currentIndex = Math.max(currentIndex - 10, 0);
+  resetPosition(); // Reset the position counter when jumping backward
+  updateAudioTrack(currentIndex);
+}
+
+function resetInput() {
+  document.getElementById('userInput').value = '';
+  document.getElementById('result').innerHTML = '';
+  resetPosition(); // Reset the position counter when resetting the input
+}
+
+function resetPosition() {
+  currentPosition = 1;
+  document.getElementById('positionBox').innerText = currentPosition;
+}
+
+function togglePlayPause() {
+  const audioPlayer = document.getElementById('audioPlayer');
+  if (audioPlayer.paused) {
+    audioPlayer.play();
+  } else {
+    audioPlayer.pause();
+  }
+  updatePlayPauseIcon();
+}
+
+function updatePlayPauseIcon() {
+  const audioPlayer = document.getElementById('audioPlayer');
+  const playPauseIcon = document.getElementById('playPauseIcon');
+  if (audioPlayer.paused) {
+    playPauseIcon.classList.remove('fa-pause');
+    playPauseIcon.classList.add('fa-play');
+  } else {
+    playPauseIcon.classList.remove('fa-play');
+    playPauseIcon.classList.add('fa-pause');
+  }
+}
+
+function handleInlineInput(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault(); // Prevent form submission or other default actions
+    checkInlineAnswer(event.target);
+  }
+}
+
+const attemptCount = {};
+
+function checkInlineAnswer(inputElement) {
+  const position = parseInt(inputElement.dataset.position);
+  const userAnswer = inputElement.value.trim().toLowerCase();
+  const answerKey = values[currentIndex][5]; // Assuming the answer key is in the 6th column
+  let correct = false;
+
+  if (!attemptCount[position]) {
+    attemptCount[position] = 0;
+  }
+
+  const matches = answerKey.match(/(\d+)\.\s*([^\d]+)/g);
+
+  if (matches) {
+    matches.forEach(entry => {
+      const match = entry.trim().match(/^(\d+)\.\s*([^\d]+)/);
+      if (match) {
+        const pos = parseInt(match[1]);
+        const word = match[2].trim().toLowerCase();
+
+        if (word === userAnswer && pos === position) {
+          inputElement.classList.add('correct');
+          inputElement.value = word + ' ✔';
+          inputElement.setAttribute('readonly', true);
+          correct = true;
+          attemptCount[position] = 0; // Reset the attempt count for the correct position
         }
-      })
-      .catch(err => console.error('Error fetching data:', err));
-
-    function updateAudioTrack(index) {
-      if (index >= 0 && index < values.length) {
-        const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
-        const audioUrl = values[index][1];
-        const trackInfo = values[index][4]; // Assuming the content for the box is in column E (index 4)
-        document.getElementById('trackId').innerText = trackId;
-        document.getElementById('audioPlayer').src = audioUrl;
-        document.getElementById('trackInfo').innerText = trackInfo;
-        document.getElementById('audioPlayer').play();
       }
-    }
+    });
+  }
 
-    function showNext() {
-      if (currentIndex < values.length - 1) {
-        currentIndex++;
-        updateAudioTrack(currentIndex);
-      }
-    }
-
-    function showPrevious() {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updateAudioTrack(currentIndex);
-      }
-    }
-
-    function jumpForward() {
-      currentIndex = Math.min(currentIndex + 10, values.length - 1);
-      updateAudioTrack(currentIndex);
-    }
-
-    function jumpBackward() {
-      currentIndex = Math.max(currentIndex - 10, 0);
-      updateAudioTrack(currentIndex);
-    }
-
-    function checkAnswer() {
-      const userInput = document.getElementById('userInput').value.trim();
-      const answerKey = values[currentIndex][5].replace(/[.,!?]/g, ''); // Assuming the answer key is in column F (index 5)
-      const resultElement = document.getElementById('result');
-      const userHistory = document.getElementById('userHistory');
-
-      // Store user input in history
-      userHistory.value += userInput.replace(/[.,!?]/g, '') + ' ';
-      document.getElementById('userInput').value = ''; // Clear the input box
-
-      // Compare each word in history with the answer key
-      const historyWords = userHistory.value.trim().split(' ');
-      const answerWords = answerKey.split(' ');
-      let allCorrect = true;
-
-      const highlightedWords = historyWords.map((word, index) => {
-        if (answerWords.includes(word)) {
-          return `<span class="correct">${word}</span>`;
-        } else {
-          allCorrect = false;
-          return `<span class="incorrect">${word}</span>`;
-        }
+  if (!correct) {
+    attemptCount[position]++;
+    if (attemptCount[position] > 5) {
+      document.getElementById('result').innerHTML = `Try: ${matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim()}`;
+    } else {
+      inputElement.classList.add('incorrect-with-x');
+      inputElement.value = userAnswer + ' ✘';
+      inputElement.setAttribute('readonly', true);
+      inputElement.addEventListener('click', function clearInput() {
+        inputElement.value = '';
+        inputElement.classList.remove('incorrect-with-x');
+        inputElement.removeAttribute('readonly');
+        inputElement.removeEventListener('click', clearInput);
       });
-
-      resultElement.innerHTML = highlightedWords.join(' ');
-
-      // Check if all words are correct
-      if (allCorrect && historyWords.length >= answerWords.length) {
-        resultElement.innerHTML = '<span class="correct-with-tick">' + userHistory.value.trim() + '</span>';
-        resultElement.innerHTML += '<div class="correct">Good job! You are correct!</div>';
-      }
     }
+  }
+
+  if (correct) {
+    moveToNextInput();
+    checkAllInputsCorrect();
+  }
+}
+
+function moveToNextInput() {
+  const nextInput = document.querySelector('.inline-input:not([readonly])');
+  if (nextInput) {
+    nextInput.focus();
+  }
+}
+
+function checkAllInputsCorrect() {
+  const allInputs = document.querySelectorAll('.inline-input');
+  let allCorrect = true;
+  allInputs.forEach(input => {
+    if (!input.hasAttribute('readonly')) {
+      allCorrect = false;
+    }
+  });
+
+  if (allCorrect) {
+    document.getElementById('result').innerHTML = "Good job! Let's move to the next track!";
+  }
+}
+
+
+
+function incrementPosition() {
+  currentPosition++;
+  document.getElementById('positionBox').innerText = currentPosition;
+}
+
+function decrementPosition() {
+  if (currentPosition > 1) {
+    currentPosition--;
+    document.getElementById('positionBox').innerText = currentPosition;
+  }
+}
+
   </script>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </body>
-
 </html>
