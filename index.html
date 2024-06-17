@@ -23,6 +23,7 @@
       color: #4CAF50;
     }
 
+    
     .button-container {
       display: flex;
       justify-content: center;
@@ -53,8 +54,44 @@
       background-color: #45a049;
     }
 
+    .button-container.hidden {
+  display: none;
+}
+
+  #nextTrackButtonContainer {
+  justify-content: center;
+  margin-top: 10px;
+}
+    #nextTrackButtonContainer button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  height: 40px;
+  padding: 10px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+    #nextTrackButtonContainer button:last-child {
+  margin-right: 0;
+}
+
+#nextTrackButtonContainer button:hover {
+  background-color: #45a049;
+}
+   #audioContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     #audioPlayer {
-      width: 100%;
+      width: 300px; /* Adjust the width as needed */
       margin: 20px 0;
     }
 
@@ -118,13 +155,60 @@
     .hidden {
       display: none;
     }
+
+.popup-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px 30px;
+  background-color: #fff;
+  border: 2px solid green;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  z-index: 1000;
+  display: none; /* Hidden by default */
+  max-width: 80%; /* Ensure it doesn't get too wide on larger screens */
+  font-size: 20px; /* Make the text larger */
+  color: navy; /* Make the text navy */
+}
+
+.popup-message.show {
+  display: block; /* Show the popup when it has the class "show"1 */
+}
+
+.popup-message button {
+  margin-top: 20px;
+  padding: 5px 10px;
+  font-size: 20px;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup-message button:hover {
+  background-color: #45a049;
+}
+
+.popup-message i {
+  font-size: 20px; /* Adjust the size of the close icon */
+}
+
+.popup-message button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMU/uR7CeGmIAG4u1RWgAlRzZP3kdD6LRT8V/5" crossorigin="anonymous">
 </head>
 <body>
-  <h1>Audio Player</h1>
+  <h1>Fill in Blank Audio Exercise</h1>
   <div id="audioContainer">
-    <h2>Audio Track <span id="trackId"></span></h2>
+    <h2>Track <span id="trackId"></span></h2>
     <audio id="audioPlayer" controls></audio>
   </div>
   <div class="button-container">
@@ -138,6 +222,12 @@
 
 <input type="text" id="hiddenInput" style="position: absolute; left: -9999px;">
   <div id="result"></div>
+
+<div id="result"></div>
+<div class="button-container hidden" id="nextTrackButtonContainer">
+  <button onclick="showPrevious()"><i class="fas fa-arrow-left"></i></button>
+  <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
+</div>
 
   <footer>
     An intellectual product of Do Thanh Hung
@@ -168,8 +258,8 @@ function updateAudioTrack(index) {
     resetInput();
     resetAttemptCount(); // Reset attempt count
     updatePlayPauseIcon(); // Ensure the play/pause icon is correct
-    
-   setTimeout(() => { // Delay 2 seconds before playing
+
+    setTimeout(() => {
       document.getElementById('audioPlayer').play();
       updatePlayPauseIcon(); // Update the play/pause icon after playing
     }, 2000);
@@ -180,6 +270,9 @@ function updateAudioTrack(index) {
       firstInputBox.focus();
     }
   }
+
+  // Hide the "Next Track" and "Previous Track" buttons
+  document.getElementById('nextTrackButtonContainer').classList.add('hidden');
 }
 
 function updatePlayPauseIcon() {
@@ -207,7 +300,7 @@ function formatTrackInfo(trackInfo) {
   return trackInfo.replace(/\b(\d+)._{3}\b/g, match => {
     const position = match.split('.')[0];
     const placeholderText = match;
-    return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" style="width: ${placeholderText.length * 10}px;" onblur="checkInlineAnswer(this)">`;
+    return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" style="width: ${placeholderText.length * 10}px;" onfocus="clearInputOnFocus(event)" onblur="checkInlineAnswer(this)">`;
   });
 }
 
@@ -261,6 +354,7 @@ function updatePlayPauseIcon() {
   }
 }
 
+
 const attemptCount = {};
             
 //start fc core compare
@@ -297,28 +391,61 @@ function checkInlineAnswer(inputElement) {
     });
   }
 
-  if (!correct && userAnswer) { // Check if userAnswer is not empty
-    attemptCount[position]++;
-    if (attemptCount[position] > 5) {
-      document.getElementById('result').innerHTML = `<div style="text-align: center; color: orange; font-style: italic;">Try: ${matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim()}</div>`;
-    } else {
-      inputElement.value = `${userAnswer} ✘`;
-      inputElement.classList.add('incorrect-with-x');
-      inputElement.addEventListener('focus', clearIncorrectInput);
-    }
-  } else if (!correct) {
-    inputElement.value = ''; // Clear the input if it's incorrect and empty
+if (!correct && userAnswer) {
+  attemptCount[position]++;
+  if (attemptCount[position] > 5) {
+    const hint = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
+    displayMessage(`Try: ${hint}`, 'orange', true); // Set isPopup to true
+  } else {
+    inputElement.value = `${userAnswer} ✘`;
+    inputElement.classList.add('incorrect-with-x');
+    inputElement.addEventListener('focus', clearIncorrectInput);
   }
+} else if (!correct) {
+  inputElement.value = ''; // Clear the input if it's incorrect and empty
+}
 
   if (correct) {
     moveToNextInput();
     checkAllInputsCorrect();
   }
 }
-
-
     
 //end fc
+    
+    //display mes
+function displayMessage(message, color, isPopup = false) {
+  if (isPopup) {
+    showPopupMessage(message);
+  } else {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `<div style="text-align: center; color: ${color}; font-style: italic;">${message}</div>`;
+    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+
+function showPopupMessage(message) {
+  const popup = document.createElement('div');
+  popup.classList.add('popup-message');
+  popup.innerHTML = `${message} <br><button onclick="closePopupMessage(this)"><i class="fas fa-times"></i></button>`;
+  document.body.appendChild(popup);
+
+  setTimeout(() => {
+    popup.classList.add('show');
+  }, 10); // Small delay to ensure the element is added to the DOM
+
+  popup.querySelector('button').focus();
+}
+
+function closePopupMessage(button) {
+  const popup = button.parentElement;
+  popup.classList.remove('show');
+  setTimeout(() => {
+    document.body.removeChild(popup);
+  }, 300); // Allow some time for the hiding animation
+}
+
+          //end display mes func
 function clearIncorrectInput() {
   this.value = '';
   this.classList.remove('incorrect-with-x');
@@ -330,7 +457,6 @@ function moveToNextInput() {
     nextInput.focus();
   }
 }
-
 function handleFocus(event) {
   const target = event.target;
   if (target.classList.contains('correct')) {
@@ -348,7 +474,8 @@ function checkAllInputsCorrect() {
   });
 
   if (allCorrect) {
-    document.getElementById('result').innerHTML = `<div style="text-align: center; color: green; font-style: italic;">Good job! Let's move to the next track!</div>`;
+    displayMessage("Good job! Let's move to the next track!", 'green');
+    document.getElementById('nextTrackButtonContainer').classList.remove('hidden');
   }
 }
 
@@ -382,6 +509,16 @@ document.addEventListener('keydown', function(event) {
     document.getElementById('audioPlayer').currentTime += 10;
   }
 });
+
+    // handling error: autocopy to next inputbox (seem not working but include to be sure)
+function clearInputOnFocus(event) {
+  const inputElement = event.target;
+  if (!inputElement.hasAttribute('readonly')) {
+    inputElement.value = '';
+    inputElement.classList.remove('incorrect-with-x');
+  }
+}
+
 
   </script>
 </body>
