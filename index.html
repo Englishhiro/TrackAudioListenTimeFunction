@@ -23,7 +23,6 @@
       color: #4CAF50;
     }
 
-    
     .button-container {
       display: flex;
       justify-content: center;
@@ -84,14 +83,13 @@
 #nextTrackButtonContainer button:hover {
   background-color: #45a049;
 }
-   #audioContainer {
+      #audioContainer {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     #audioPlayer {
-      width: 300px; /* Adjust the width as needed */
+      width: 100%;
       margin: 20px 0;
     }
 
@@ -175,7 +173,7 @@
 }
 
 .popup-message.show {
-  display: block; /* Show the popup when it has the class "show"1 */
+  display: block; /* Show the popup when it has the class "show" */
 }
 
 .popup-message button {
@@ -206,7 +204,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMU/uR7CeGmIAG4u1RWgAlRzZP3kdD6LRT8V/5" crossorigin="anonymous">
 </head>
 <body>
-  <h1>Fill in Blank Audio Exercise</h1>
+  <h1>Fill in the blanks</h1>
   <div id="audioContainer">
     <h2>Track <span id="trackId"></span></h2>
     <audio id="audioPlayer" controls></audio>
