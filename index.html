@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audio Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <title>Fill-in-blank Audio Exercise</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -133,206 +135,254 @@
     <button onclick="jumpForward()"><i class="fas fa-fast-forward"></i></button>
   </div>
   <div class="track-info" id="trackInfo"></div>
+
+<input type="text" id="hiddenInput" style="position: absolute; left: -9999px;">
   <div id="result"></div>
+
   <footer>
     An intellectual product of Do Thanh Hung
   </footer>
   <script>
-    const baseUrl = "https://script.google.com/macros/s/AKfycbyVhhYDfbVrrog-R8jVZPN9eHwq-XcR24ZrWBKdgkHNvD_Pt8l2Y8fIqgdIzdepuu7S/exec";
-    let values = [];
-    let currentIndex = 0;
-    fetch(baseUrl)
-      .then(res => res.json())
-      .then(data => {
-        values = data.values.slice(1); // Skip the first row (title row)
-        if (values.length > 0) {
-          updateAudioTrack(currentIndex); // Load the first track immediately
-        }
-      })
-      .catch(err => console.error('Error fetching data:', err));
+ const baseUrl = "https://script.google.com/macros/s/AKfycbyVhhYDfbVrrog-R8jVZPN9eHwq-XcR24ZrWBKdgkHNvD_Pt8l2Y8fIqgdIzdepuu7S/exec";
+let values = [];
+let currentIndex = 0;
 
-    function updateAudioTrack(index) {
-      if (index >= 0 && index < values.length) {
-        const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
-        const audioUrl = values[index][1];
-        const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
-        document.getElementById('trackId').innerText = trackId;
-        document.getElementById('audioPlayer').src = audioUrl;
-        document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
-        document.getElementById('audioPlayer').play();
-        resetInput();
-        resetAttemptCount(); // Reset attempt count
-        updatePlayPauseIcon(); // Ensure the play/pause icon is correct
-      }
+fetch(baseUrl)
+  .then(res => res.json())
+  .then(data => {
+    values = data.values.slice(1); // Skip the first row (title row)
+    if (values.length > 0) {
+      updateAudioTrack(currentIndex); // Load the first track immediately
     }
+  })
+  .catch(err => console.error('Error fetching data:', err));
 
-    function resetAttemptCount() {
+function updateAudioTrack(index) {
+  if (index >= 0 && index < values.length) {
+    const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
+    const audioUrl = values[index][1];
+    const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
+    document.getElementById('trackId').innerText = trackId;
+    document.getElementById('audioPlayer').src = audioUrl;
+    document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
+    resetInput();
+    resetAttemptCount(); // Reset attempt count
+    updatePlayPauseIcon(); // Ensure the play/pause icon is correct
+    
+   setTimeout(() => { // Delay 2 seconds before playing
+      document.getElementById('audioPlayer').play();
+      updatePlayPauseIcon(); // Update the play/pause icon after playing
+    }, 2000);
+
+    // Auto-focus on the first input box
+    const firstInputBox = document.querySelector('.inline-input');
+    if (firstInputBox) {
+      firstInputBox.focus();
+    }
+  }
+}
+
+function updatePlayPauseIcon() {
+  const audioPlayer = document.getElementById('audioPlayer');
+  const playPauseIcon = document.getElementById('playPauseIcon');
+  if (audioPlayer.paused) {
+    playPauseIcon.classList.remove('fa-pause');
+    playPauseIcon.classList.add('fa-play');
+  } else {
+    playPauseIcon.classList.remove('fa-play');
+    playPauseIcon.classList.add('fa-pause');
+  }
+}
+
+
+function resetAttemptCount() {
   for (let key in attemptCount) {
     if (attemptCount.hasOwnProperty(key)) {
       attemptCount[key] = 0;
     }
   }
 }
-    function formatTrackInfo(trackInfo) {
-      return trackInfo.replace(/\b(\d+)._{3}\b/g, match => {
-        const position = match.split('.')[0];
-        const placeholderText = match;
-        return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" style="width: ${placeholderText.length * 10}px;" onblur="checkInlineAnswer(this)">`;
-      });
-    }
 
-    function showNext() {
-      if (currentIndex < values.length - 1) {
-        currentIndex++;
-        updateAudioTrack(currentIndex);
-      }
-    }
+function formatTrackInfo(trackInfo) {
+  return trackInfo.replace(/\b(\d+)._{3}\b/g, match => {
+    const position = match.split('.')[0];
+    const placeholderText = match;
+    return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" style="width: ${placeholderText.length * 10}px;" onblur="checkInlineAnswer(this)">`;
+  });
+}
 
-    function showPrevious() {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updateAudioTrack(currentIndex);
-      }
-    }
+function showNext() {
+  if (currentIndex < values.length - 1) {
+    currentIndex++;
+    updateAudioTrack(currentIndex);
+  }
+}
 
-    function jumpForward() {
-      currentIndex = Math.min(currentIndex + 10, values.length - 1);
-      updateAudioTrack(currentIndex);
-    }
+function showPrevious() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    updateAudioTrack(currentIndex);
+  }
+}
 
-    function jumpBackward() {
-      currentIndex = Math.max(currentIndex - 10, 0);
-      updateAudioTrack(currentIndex);
-    }
+function jumpForward() {
+  currentIndex = Math.min(currentIndex + 10, values.length - 1);
+  updateAudioTrack(currentIndex);
+}
 
-    function resetInput() {
-      document.getElementById('result').innerHTML = '';
-    }
+function jumpBackward() {
+  currentIndex = Math.max(currentIndex - 10, 0);
+  updateAudioTrack(currentIndex);
+}
 
-    function togglePlayPause() {
-      const audioPlayer = document.getElementById('audioPlayer');
-      if (audioPlayer.paused) {
-        audioPlayer.play();
-      } else {
-        audioPlayer.pause();
-      }
-      updatePlayPauseIcon();
-    }
+function resetInput() {
+  document.getElementById('result').innerHTML = '';
+}
 
-    function updatePlayPauseIcon() {
-      const audioPlayer = document.getElementById('audioPlayer');
-      const playPauseIcon = document.getElementById('playPauseIcon');
-      if (audioPlayer.paused) {
-        playPauseIcon.classList.remove('fa-pause');
-        playPauseIcon.classList.add('fa-play');
-      } else {
-        playPauseIcon.classList.remove('fa-play');
-        playPauseIcon.classList.add('fa-pause');
-      }
-    }
+function togglePlayPause() {
+  const audioPlayer = document.getElementById('audioPlayer');
+  if (audioPlayer.paused) {
+    audioPlayer.play();
+  } else {
+    audioPlayer.pause();
+  }
+  updatePlayPauseIcon();
+}
 
-    const attemptCount = {};
+function updatePlayPauseIcon() {
+  const audioPlayer = document.getElementById('audioPlayer');
+  const playPauseIcon = document.getElementById('playPauseIcon');
+  if (audioPlayer.paused) {
+    playPauseIcon.classList.remove('fa-pause');
+    playPauseIcon.classList.add('fa-play');
+  } else {
+    playPauseIcon.classList.remove('fa-play');
+    playPauseIcon.classList.add('fa-pause');
+  }
+}
 
-    function checkInlineAnswer(inputElement) {
-      const position = parseInt(inputElement.dataset.position);
-      const userAnswer = inputElement.value.trim().toLowerCase();
-      const answerKey = values[currentIndex][5]; // Assuming the answer key is in the 6th column
-      let correct = false;
+const attemptCount = {};
+            
+//start fc core compare
+function checkInlineAnswer(inputElement) {
+  const position = parseInt(inputElement.dataset.position);
+  const userAnswer = inputElement.value.trim().toLowerCase();
+  const answerKey = values[currentIndex][5]; // Assuming the answer key is in the 6th column
+  let correct = false;
 
-      if (!attemptCount[position]) {
-        attemptCount[position] = 0;
-      }
+  if (!attemptCount[position]) {
+    attemptCount[position] = 0;
+  }
 
-      const matches = answerKey.match(/(\d+).\s*([^\d]+)/g);
+  const matches = answerKey.match(/(\d+).\s*([^\d]+)/g);
 
-      if (matches) {
-        matches.forEach(entry => {
-          const match = entry.trim().match(/^(\d+).\s*([^\d]+)/);
-          if (match) {
-            const pos = parseInt(match[1]);
-            const word = match[2].trim().toLowerCase();
+  if (matches) {
+    matches.forEach(entry => {
+      const match = entry.trim().match(/^(\d+).\s*([^\d]+)/);
+      if (match) {
+        const pos = parseInt(match[1]);
+        const word = match[2].trim().toLowerCase();
 
-            if (word === userAnswer && pos === position) {
-              inputElement.classList.add('correct');
-              inputElement.value = word + ' ✔';
-              inputElement.setAttribute('readonly', true);
-              correct = true;
-              attemptCount[position] = 0; // Reset the attempt count for the correct position
-              inputElement.removeEventListener('click', clearIncorrectInput);
-              inputElement.removeEventListener('focus', preventFocus);
-            }
-          }
-        });
-      }
-
-      if (!correct && userAnswer) { // Check if userAnswer is not empty
-        attemptCount[position]++;
-        if (attemptCount[position] > 5) {
-          
-document.getElementById('result').innerHTML = `<div style="text-align: center;">Try: ${matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim()}</div>`;
-
-          
-        } else {
-          inputElement.classList.add('incorrect-with-x');
-          inputElement.value = userAnswer + ' ✘';
+        if (word === userAnswer && pos === position) {
+          inputElement.classList.add('correct');
+          inputElement.value = word + ' ✔';
           inputElement.setAttribute('readonly', true);
-          inputElement.addEventListener('click', clearIncorrectInput);
-          inputElement.addEventListener('focus', preventFocus);
+          inputElement.setAttribute('tabindex', '-1'); // Disable tabbing into the correct input
+          correct = true;
+          attemptCount[position] = 0; // Reset the attempt count for the correct position
+          inputElement.removeEventListener('click', clearIncorrectInput);
+          inputElement.removeEventListener('focus', clearIncorrectInput);
         }
-      } else if (!correct) {
-        inputElement.value = ''; // Clear the input if it's incorrect and empty
-      }
-
-      if (correct) {
-        moveToNextInput();
-        checkAllInputsCorrect();
-      }
-    }
-
-    function clearIncorrectInput() {
-      const inputElement = this;
-      inputElement.value = '';
-      inputElement.classList.remove('incorrect-with-x');
-      inputElement.removeAttribute('readonly');
-      inputElement.removeEventListener('click', clearIncorrectInput);
-      inputElement.removeEventListener('focus', preventFocus);
-    }
-
-    function moveToNextInput() {
-      const nextInput = document.querySelector('.inline-input:not([readonly])');
-      if (nextInput) {
-        nextInput.focus();
-      }
-    }
-
-    function checkAllInputsCorrect() {
-      const allInputs = document.querySelectorAll('.inline-input');
-      let allCorrect = true;
-      allInputs.forEach(input => {
-        if (!input.hasAttribute('readonly')) {
-          allCorrect = false;
-        }
-      });
-
-      if (allCorrect) {
-        document.getElementById('result').innerHTML = "Good job! Let's move to the next track!";
-      }
-    }
-
-    // Prevent correct inputs from being focused and edited
-    function preventFocus(event) {
-      const target = event.target;
-      if (target.classList.contains('correct')) {
-        target.blur();
-      }
-    }
-
-    document.addEventListener('input', function (event) {
-      if (event.target.classList.contains('inline-input')) {
-        const inputElement = event.target;
-        inputElement.style.width = `${(inputElement.value.length + 1) * 10}px`; // Adjust width based on input length
       }
     });
+  }
+
+  if (!correct && userAnswer) { // Check if userAnswer is not empty
+    attemptCount[position]++;
+    if (attemptCount[position] > 5) {
+      document.getElementById('result').innerHTML = `<div style="text-align: center; color: orange; font-style: italic;">Try: ${matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim()}</div>`;
+    } else {
+      inputElement.value = `${userAnswer} ✘`;
+      inputElement.classList.add('incorrect-with-x');
+      inputElement.addEventListener('focus', clearIncorrectInput);
+    }
+  } else if (!correct) {
+    inputElement.value = ''; // Clear the input if it's incorrect and empty
+  }
+
+  if (correct) {
+    moveToNextInput();
+    checkAllInputsCorrect();
+  }
+}
+
+
+    
+//end fc
+function clearIncorrectInput() {
+  this.value = '';
+  this.classList.remove('incorrect-with-x');
+  this.removeEventListener('focus', clearIncorrectInput);
+}
+function moveToNextInput() {
+  const nextInput = document.querySelector('.inline-input:not([readonly])');
+  if (nextInput) {
+    nextInput.focus();
+  }
+}
+
+function handleFocus(event) {
+  const target = event.target;
+  if (target.classList.contains('correct')) {
+    target.blur();
+  }
+}
+
+function checkAllInputsCorrect() {
+  const allInputs = document.querySelectorAll('.inline-input');
+  let allCorrect = true;
+  allInputs.forEach(input => {
+    if (!input.hasAttribute('readonly')) {
+      allCorrect = false;
+    }
+  });
+
+  if (allCorrect) {
+    document.getElementById('result').innerHTML = `<div style="text-align: center; color: green; font-style: italic;">Good job! Let's move to the next track!</div>`;
+  }
+}
+
+document.addEventListener('focusin', handleFocus);
+
+function preventFocus(event) {
+  const target = event.target;
+  if (target.classList.contains('correct')) {
+    target.blur();
+  }
+}
+
+document.addEventListener('input', function (event) {
+  if (event.target.classList.contains('inline-input')) {
+    const inputElement = event.target;
+    inputElement.style.width = `${(inputElement.value.length + 1) * 10}px`; // Adjust width based on input length
+  }
+});
+
+document.addEventListener('keydown', function(event) {
+ if (event.key === 'Enter') {
+    event.preventDefault();
+    togglePlayPause();
+  } else if (event.key === 'ArrowLeft') {
+    showPrevious();
+  } else if (event.key === 'ArrowRight') {
+    showNext();
+  } else if (event.key === 'Shift' && event.code === 'ShiftLeft') {
+    document.getElementById('audioPlayer').currentTime -= 10;
+  } else if (event.key === 'Shift' && event.code === 'ShiftRight') {
+    document.getElementById('audioPlayer').currentTime += 10;
+  }
+});
+
   </script>
 </body>
 </html>
