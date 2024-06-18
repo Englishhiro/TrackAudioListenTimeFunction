@@ -153,7 +153,6 @@
     .hidden {
       display: none;
     }
-
 .popup-message {
   position: fixed;
   top: 50%;
@@ -321,11 +320,15 @@ function showPrevious() {
 function jumpForward() {
   currentIndex = Math.min(currentIndex + 10, values.length - 1);
   updateAudioTrack(currentIndex);
+  requestFullScreen(); // Request full-screen mode when jumping forward
+
 }
 
 function jumpBackward() {
   currentIndex = Math.max(currentIndex - 10, 0);
   updateAudioTrack(currentIndex);
+  requestFullScreen(); // Request full-screen mode when jumping backward
+
 }
 
 function resetInput() {
@@ -439,7 +442,7 @@ function displayMessage(message, color, isPopup = false) {
     resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
-
+    
 function showPopupMessage(message) {
   const popup = document.createElement('div');
   popup.classList.add('popup-message');
@@ -458,6 +461,9 @@ function closePopupMessage(button) {
   popup.classList.remove('show');
   setTimeout(() => {
     document.body.removeChild(popup);
+    if (button.previousSibling.nodeValue.includes("Good job! All are correct!")) {
+      showNext(); // Move to the next track after closing the popup
+    }
   }, 300); // Allow some time for the hiding animation
 }
 
@@ -490,8 +496,8 @@ function checkAllInputsCorrect() {
   });
 
   if (allCorrect) {
-    displayMessage("Good job! Let's move to the next track!", 'green');
-    document.getElementById('nextTrackButtonContainer').classList.remove('hidden');
+    showPopupMessage("Good job! All are correct! Let's move to the next track!");
+
   }
 }
 
@@ -576,6 +582,20 @@ function requestFullScreen() {
     elem.msRequestFullscreen();
   }
 }
+// Exit full-screen mode to the section level when scrolling beyond content
+document.addEventListener('scroll', function() {
+  const section = document.getElementById('audio-exercise'); // Replace 'your-section-id' with the actual ID of the section where the app is embedded
+  const sectionRect = section.getBoundingClientRect();
+  const sectionTop = sectionRect.top;
+  const sectionBottom = sectionRect.bottom;
+
+  if (window.scrollY < sectionTop || window.scrollY > sectionBottom) {
+    if (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+      exitFullScreen();
+    }
+  }
+});
+
   </script>
 </body>
 </html>
