@@ -306,6 +306,7 @@ function showNext() {
   if (currentIndex < values.length - 1) {
     currentIndex++;
     updateAudioTrack(currentIndex);
+    requestFullScreen(); // Request full-screen mode when showing the next track
   }
 }
 
@@ -313,6 +314,7 @@ function showPrevious() {
   if (currentIndex > 0) {
     currentIndex--;
     updateAudioTrack(currentIndex);
+    requestFullScreen(); // Request full-screen mode when showing the previous track
   }
 }
 
@@ -561,7 +563,19 @@ function logMistakeData(trackId, studentName, exerciseType, date, mistakes) {
   });
 }
 
-
+// full screen mode
+function requestFullScreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) { // Firefox
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) { // Chrome, Safari and Opera
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { // IE/Edge
+    elem.msRequestFullscreen();
+  }
+}
   </script>
 </body>
 </html>
