@@ -203,7 +203,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMU/uR7CeGmIAG4u1RWgAlRzZP3kdD6LRT8V/5" crossorigin="anonymous">
 </head>
 <body>
-  <h1>Fill in the blanks</h1>
+  <h1 id="mainTitle">Fill in the blanks</h1>
   <div id="audioContainer">
     <h2>Track <span id="trackId"></span></h2>
     <audio id="audioPlayer" controls></audio>
@@ -226,7 +226,7 @@
   <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
 </div>
 
-  <footer>
+  <footer id="mainFooter">
     An intellectual product of Do Thanh Hung
   </footer>
   <script>
@@ -582,19 +582,24 @@ function requestFullScreen() {
     elem.msRequestFullscreen();
   }
 }
-// Exit full-screen mode to the section level when scrolling beyond content
-document.addEventListener('scroll', function() {
-  const section = document.getElementById('audio-exercise'); // Replace 'your-section-id' with the actual ID of the section where the app is embedded
-  const sectionRect = section.getBoundingClientRect();
-  const sectionTop = sectionRect.top;
-  const sectionBottom = sectionRect.bottom;
+// Exit full-screen mode 
+document.getElementById('mainTitle').addEventListener('click', exitFullScreen);
+document.getElementById('mainTitle').addEventListener('touchstart', exitFullScreen);
+document.getElementById('mainFooter').addEventListener('click', exitFullScreen);
+document.getElementById('mainFooter').addEventListener('touchstart', exitFullScreen);
 
-  if (window.scrollY < sectionTop || window.scrollY > sectionBottom) {
-    if (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
-      exitFullScreen();
-    }
+function exitFullScreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else if (document.mozFullScreenElement) { // Firefox
+    document.mozCancelFullScreen();
+  } else if (document.webkitFullscreenElement) { // Chrome, Safari and Opera
+    document.webkitExitFullscreen();
+  } else if (document.msFullscreenElement) { // IE/Edge
+    document.msExitFullscreen();
   }
-});
+}
+
 
   </script>
 </body>
