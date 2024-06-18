@@ -391,9 +391,25 @@ function checkInlineAnswer(inputElement) {
 
 if (!correct && userAnswer) {
   attemptCount[position]++;
-  if (attemptCount[position] > 5) {
+  if (attemptCount[position] > 3) {
+
+//pop up mes
     const hint = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
-    displayMessage(`Try: ${hint}`, 'orange', true); // Set isPopup to true
+    displayMessage(`Try: ${hint}`, 'purple', true); // Set isPopup to true
+
+// send to ggsheet
+ const mistake = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
+      const date = new Date();
+      logMistakeData(
+        values[currentIndex][0], // trackId
+        'test user 1', // studentName
+        'fill-in-blank audio', // exerciseType
+        date,
+        mistake // mistakes
+      );
+
+
+
   } else {
     inputElement.value = `${userAnswer} ✘`;
     inputElement.classList.add('incorrect-with-x');
@@ -515,6 +531,34 @@ function clearInputOnFocus(event) {
     inputElement.value = '';
     inputElement.classList.remove('incorrect-with-x');
   }
+}
+
+//logginng to ggsheet mistake:
+
+function logMistakeData(trackId, studentName, exerciseType, date, mistakes) {
+  const url = 'https://script.google.com/macros/s/AKfycbw1QgQ7eAf74Ewxdi7-gszjdpovrFyqLYHrZjVpAr9X4kzmkgtz1-L_Ll9Vm6tbwSpm/exec';
+    const formattedDate = `${date.toLocaleDateString()} ${date.getHours()}:${date.getMinutes()}`;
+
+  const data = {
+    trackId: trackId,
+    studentName: studentName,
+    exerciseType: exerciseType,
+    date: formattedDate,
+    mistakes: mistakes
+  };
+
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }).then(response => {
+    console.log('Mistake data logged successfully:', data);
+  }).catch(error => {
+    console.error('Error logging mistake data:', error);
+  });
 }
 
 
