@@ -199,6 +199,44 @@
   align-items: center;
   justify-content: center;
 }
+    
+       .completed {
+      color: blue;
+      position: relative;
+    }
+    .completed::after {
+      content: url('/path/to/completed-icon.png'); /* Path to your completed icon */
+      position: absolute;
+      right: -30px; /* Adjust position as needed */
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    /* statistic box */
+.statistics-box {
+  background: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 300px;
+  margin: 50px auto 20px; /* 40px space above, 20px below */
+  text-align: center;
+}
+
+.statistics-box h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.statistics-box p {
+  font-size: 18px;
+  color: #666;
+}
+
+.statistics-box span {
+  font-weight: bold;
+  color: #000;
+}
   </style>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMU/uR7CeGmIAG4u1RWgAlRzZP3kdD6LRT8V/5" crossorigin="anonymous">
 </head>
@@ -220,10 +258,12 @@
 <input type="text" id="hiddenInput" style="position: absolute; left: -9999px;">
   <div id="result"></div>
 
-<div id="result"></div>
-<div class="button-container hidden" id="nextTrackButtonContainer">
-  <button onclick="showPrevious()"><i class="fas fa-arrow-left"></i></button>
-  <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
+<div id="statisticsBox" class="statistics-box">
+  <h3>Completion Statistics</h3>
+  <p>Today: <span id="todayStats"></span></p>
+  <p>This Week: <span id="weekStats"></span></p>
+  <p>This Month: <span id="monthStats"></span></p>
+  <p>All Time: <span id="allTimeStats"></span></p>
 </div>
 
   <footer id="mainFooter">
@@ -233,16 +273,38 @@
  const baseUrl = "https://script.google.com/macros/s/AKfycbyVhhYDfbVrrog-R8jVZPN9eHwq-XcR24ZrWBKdgkHNvD_Pt8l2Y8fIqgdIzdepuu7S/exec";
 let values = [];
 let currentIndex = 0;
+let stats = {};
 
 fetch(baseUrl)
-  .then(res => res.json())
-  .then(data => {
+.then(res => res.json())
+.then(data => {
     values = data.values.slice(1); // Skip the first row (title row)
+stats = {
+    todayCompleted: data.values[0][17] || 0,       // R1
+    thisWeekCompleted: data.values[1][17] || 0,    // R2
+    thisMonthCompleted: data.values[2][17] || 0,   // R3
+    allCompleted: data.values[3][17] || 0,         // R4
+    todayTotal: data.values[0][14] || 0,           // O1
+    thisWeekTotal: data.values[1][14] || 0,        // O2
+    thisMonthTotal: data.values[2][14] || 0,       // O3
+    allTotal: data.values[3][14] || 0              // O4
+};
+
+    updateStatsBox(); // Update the statistics box
     if (values.length > 0) {
-      updateAudioTrack(currentIndex); // Load the first track immediately
+        updateAudioTrack(currentIndex); // Load the first track immediately
+     
     }
-  })
-  .catch(err => console.error('Error fetching data:', err));
+ 
+})
+.catch(err => console.error('Error fetching data:', err));
+
+function updateStatsBox() {
+    document.getElementById('todayStats').textContent = `${stats.todayCompleted} / ${stats.todayTotal}`;
+    document.getElementById('weekStats').textContent = `${stats.thisWeekCompleted} / ${stats.thisWeekTotal}`;
+    document.getElementById('monthStats').textContent = `${stats.thisMonthCompleted} / ${stats.thisMonthTotal}`;
+    document.getElementById('allTimeStats').textContent = `${stats.allCompleted} / ${stats.allTotal}`;
+}
 
 function updateAudioTrack(index) {
   if (index >= 0 && index < values.length) {
@@ -394,35 +456,30 @@ function checkInlineAnswer(inputElement) {
     });
   }
 
-if (!correct && userAnswer) {
-  attemptCount[position]++;
-  if (attemptCount[position] > 3) {
-
-//pop up mes
-    const hint = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
-    displayMessage(`Try: ${hint}`, 'purple', true); // Set isPopup to true
-
-// send to ggsheet
- const mistake = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
+  if (!correct && userAnswer) {
+    attemptCount[position]++;
+    if (attemptCount[position] > 3) {
+      const hint = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
+      displayMessage(`Try: ${hint}`, 'purple', true); // Set isPopup to true
+      
+      // Log the mistake
       const date = new Date();
       logMistakeData(
         values[currentIndex][0], // trackId
         'test user 1', // studentName
         'fill-in-blank audio', // exerciseType
         date,
-        mistake // mistakes
+        hint // mistakes
       );
 
-
-
-  } else {
-    inputElement.value = `${userAnswer} ✘`;
-    inputElement.classList.add('incorrect-with-x');
-    inputElement.addEventListener('focus', clearIncorrectInput);
+    } else {
+      inputElement.value = `${userAnswer} ✘`;
+      inputElement.classList.add('incorrect-with-x');
+      inputElement.addEventListener('focus', clearIncorrectInput);
+    }
+  } else if (!correct) {
+    inputElement.value = ''; // Clear the input if it's incorrect and empty
   }
-} else if (!correct) {
-  inputElement.value = ''; // Clear the input if it's incorrect and empty
-}
 
   if (correct) {
     moveToNextInput();
@@ -446,14 +503,18 @@ function displayMessage(message, color, isPopup = false) {
 function showPopupMessage(message) {
   const popup = document.createElement('div');
   popup.classList.add('popup-message');
-  popup.innerHTML = `${message} <br><button onclick="closePopupMessage(this)"><i class="fas fa-times"></i></button>`;
+  popup.innerHTML = `${message} <br><button onclick="closePopupMessage(this)" id="popupCloseButton"><i class="fas fa-times"></i></button>`;
   document.body.appendChild(popup);
 
   setTimeout(() => {
     popup.classList.add('show');
   }, 10); // Small delay to ensure the element is added to the DOM
 
-  popup.querySelector('button').focus();
+  const closeButton = popup.querySelector('button');
+  closeButton.focus();
+
+  // Add event listener for keydown events
+  document.addEventListener('keydown', handlePopupKeydown);
 }
 
 function closePopupMessage(button) {
@@ -465,6 +526,19 @@ function closePopupMessage(button) {
       showNext(); // Move to the next track after closing the popup
     }
   }, 300); // Allow some time for the hiding animation
+
+  // Remove the keydown event listener when the popup is closed
+  document.removeEventListener('keydown', handlePopupKeydown);
+}
+
+function handlePopupKeydown(event) {
+  if (event.key === 'Tab' || event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault(); // Prevent default action for Tab and Space
+    const closeButton = document.getElementById('popupCloseButton');
+    if (closeButton) {
+      closeButton.click();
+    }
+  }
 }
 
           //end display mes func
@@ -497,7 +571,8 @@ function checkAllInputsCorrect() {
 
   if (allCorrect) {
     showPopupMessage("Good job! All are correct!");
-
+ // Log completion data to Google Sheets
+        logCompletionData();
   }
 }
 
@@ -554,6 +629,8 @@ function logMistakeData(trackId, studentName, exerciseType, date, mistakes) {
     date: formattedDate,
     mistakes: mistakes
   };
+  // Add the mistake to the global mistakes array
+  mistakesAtThreeAttempts.push(mistakes);
 
   fetch(url, {
     method: 'POST',
@@ -609,6 +686,50 @@ function exitFullScreen() {
   }
 }
 
+
+let mistakesAtThreeAttempts = [];
+
+// log to ggsheet result:
+function logCompletionData() {
+  const url = 'https://script.google.com/macros/s/AKfycbxmXSuXneMUZMGiYeqWJaTdrRdYKVcOk18JKDGkEHldZa5ozNq541916FVNZbBgGu1N/exec';
+  const date = new Date();
+  const formattedDate = `${date.toLocaleDateString()} ${date.getHours()}:${date.getMinutes()}`;
+  const trackId = values[currentIndex][0]; // Assuming trackId is in the first column
+  const mistakes = mistakesAtThreeAttempts.length > 0 ? mistakesAtThreeAttempts.join(', ') : "none"; // Include the mistakes or "none" if there are none
+
+  const data = {
+    user: 'test user 1',
+    exerciseType: 'fill-in-blank audio',
+    date: formattedDate,
+    tasksCompleted: trackId,
+    mistakes: mistakes
+  };
+
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }).then(response => {
+    console.log('Completion data logged successfully:', data);
+    // Clear the mistakes array after logging
+    mistakesAtThreeAttempts = [];
+  }).catch(error => {
+    console.error('Error logging completion data:', error);
+  });
+}
+    
+    
+    // exercise completion box code
+    
+    
+  
+ 
+
+     
+      
 
   </script>
 </body>
