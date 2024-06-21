@@ -3,42 +3,736 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic HTML Loading</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <title>Fill-in-blank Audio Exercise</title>
   <style>
-    /* Add these styles to prevent scrollbar */
-    html, body {
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      padding: 20px;
       margin: 0;
-      padding: 0;
-      overflow: hidden; /* This hides the scrollbar */
-      height: 100%; /* Ensure full height usage */
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    #content {
-      overflow: hidden; /* Prevents the content div from overflowing */
-      height: 100%;
-      width: 100%;
-      box-sizing: border-box; /* Ensures padding and borders are included in width/height */
+    h1 {
+      text-align: center;
+      color: #4CAF50;
     }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 65px;
+      height: 40px;
+      padding: 10px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:last-child {
+      margin-right: 0;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .button-container.hidden {
+  display: none;
+}
+
+  #nextTrackButtonContainer {
+  justify-content: center;
+  margin-top: 10px;
+}
+    #nextTrackButtonContainer button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  height: 40px;
+  padding: 10px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+    #nextTrackButtonContainer button:last-child {
+  margin-right: 0;
+}
+
+#nextTrackButtonContainer button:hover {
+  background-color: #45a049;
+}
+      #audioContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #audioPlayer {
+      width: 100%;
+      margin: 20px 0;
+    }
+
+    .track-info {
+      text-align: center;
+      margin: 20px 0;
+      padding: 10px;
+      background-color: #e8f5e9;
+      border: 1px solid #4CAF50;
+      border-radius: 5px;
+    }
+
+    .inline-input {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      background-color: transparent;
+      width: 30px; /* Initial small size */
+      text-align: center;
+      font-size: 16px;
+      outline: none;
+      transition: width 0.3s ease; /* Smooth transition for width change */
+    }
+
+    .inline-input.correct {
+      color: green;
+      font-weight: bold;
+      width: auto; /* Allow the box to expand to fit the content */
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      pointer-events: none;
+    }
+
+    .inline-input.incorrect-with-x {
+      color: red;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+    .inline-input.incorrect-with-x::after {
+      content: ' ✘';
+      color: red;
+      font-weight: bold;
+    }
+
+    .bold-navy {
+      font-weight: bold;
+      color: navy;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: auto;
+      padding: 10px 0;
+      font-size: 14px;
+      color: #555;
+      background-color: transparent;
+    }
+
+    .hidden {
+      display: none;
+    }
+.popup-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px 30px;
+  background-color: #fff;
+  border: 2px solid green;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  z-index: 1000;
+  display: none; /* Hidden by default */
+  max-width: 80%; /* Ensure it doesn't get too wide on larger screens */
+  font-size: 20px; /* Make the text larger */
+  color: navy; /* Make the text navy */
+}
+
+.popup-message.show {
+  display: block; /* Show the popup when it has the class "show" */
+}
+
+.popup-message button {
+  margin-top: 20px;
+  padding: 5px 10px;
+  font-size: 20px;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.popup-message button:hover {
+  background-color: #45a049;
+}
+
+.popup-message i {
+  font-size: 20px; /* Adjust the size of the close icon */
+}
+
+.popup-message button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+    
+       .completed {
+      color: blue;
+      position: relative;
+    }
+    .completed::after {
+      content: url('/path/to/completed-icon.png'); /* Path to your completed icon */
+      position: absolute;
+      right: -30px; /* Adjust position as needed */
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    
+     /* statistic box */
+.statistics-box {
+  background: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 300px;
+  margin: 50px auto 20px; /* 40px space above, 20px below */
+  text-align: center;
+}
+
+.statistics-box h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.statistics-box p {
+  font-size: 18px;
+  color: #666;
+}
+
+.statistics-box span {
+  font-weight: bold;
+  color: #000;
+}
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMU/uR7CeGmIAG4u1RWgAlRzZP3kdD6LRT8V/5" crossorigin="anonymous">
 </head>
 <body>
-  <div id="content"></div>
+  <h1 id="mainTitle">Fill in the blanks</h1>
+  <div id="audioContainer">
+    <h2 id="mainH2">Track <span id="trackId"></span></h2>
+    <audio id="audioPlayer" controls></audio>
+  </div>
+  <div class="button-container">
+    <button onclick="jumpBackward()"><i class="fas fa-fast-backward"></i></button>
+    <button onclick="showPrevious()"><i class="fas fa-arrow-left"></i></button>
+    <button onclick="togglePlayPause()"><i class="fas fa-play" id="playPauseIcon"></i></button>
+    <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
+    <button onclick="jumpForward()"><i class="fas fa-fast-forward"></i></button>
+  </div>
+  <div class="track-info" id="trackInfo"></div>
+
+<input type="text" id="hiddenInput" style="position: absolute; left: -9999px;">
+  <div id="result"></div>
+
+<div id="result"></div>
+<div class="button-container hidden" id="nextTrackButtonContainer">
+  <button onclick="showPrevious()"><i class="fas fa-arrow-left"></i></button>
+  <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
+</div>
+  
+  <div id="statisticsBox" class="statistics-box">
+  <h3>Completion Stats</h3>
+  <p>Today: <span id="todayStats"></span></p>
+  <p>This Week: <span id="weekStats"></span></p>
+  <p>This Month: <span id="monthStats"></span></p>
+  <p>All Time: <span id="allTimeStats"></span></p>
+</div>
+  
+
+  <footer id="mainFooter">
+    An intellectual product of Do Thanh Hung
+  </footer>
   <script>
-    fetch('https://script.google.com/macros/s/AKfycbxGvzYmMopCSrjJ6eoDaHlkXQEB5Kg6P3cTV2pQ1EVX_3UWvTe0IxqFF3PZa7SLoRIwZw/exec')
-      .then(response => response.text())
-      .then(data => {
-        const contentDiv = document.getElementById('content');
-        contentDiv.innerHTML = data;
-        
-        // Re-insert the script tags to ensure they execute
-        const scripts = contentDiv.getElementsByTagName('script');
-        for (let i = 0; i < scripts.length; i++) {
-          const scriptTag = document.createElement('script');
-          scriptTag.text = scripts[i].innerText;
-          document.head.appendChild(scriptTag);
+ const baseUrl = "https://script.google.com/macros/s/AKfycbyVhhYDfbVrrog-R8jVZPN9eHwq-XcR24ZrWBKdgkHNvD_Pt8l2Y8fIqgdIzdepuu7S/exec";
+let values = [];
+let currentIndex = 0;
+let stats = {};
+
+fetch(baseUrl)
+.then(res => res.json())
+.then(data => {
+    values = data.values.slice(1); // Skip the first row (title row)
+stats = {
+    todayCompleted: data.values[0][17] || 0,       // R1
+    thisWeekCompleted: data.values[1][17] || 0,    // R2
+    thisMonthCompleted: data.values[2][17] || 0,   // R3
+    allCompleted: data.values[3][17] || 0,         // R4
+    todayTotal: data.values[0][14] || 0,           // O1
+    thisWeekTotal: data.values[1][14] || 0,        // O2
+    thisMonthTotal: data.values[2][14] || 0,       // O3
+    allTotal: data.values[3][14] || 0              // O4
+};
+
+    updateStatsBox(); // Update the statistics box
+    if (values.length > 0) {
+        updateAudioTrack(currentIndex); // Load the first track immediately
+     
+    }
+ 
+})
+.catch(err => console.error('Error fetching data:', err));
+
+function updateStatsBox() {
+    document.getElementById('todayStats').textContent = `${stats.todayCompleted} / ${stats.todayTotal}`;
+    document.getElementById('weekStats').textContent = `${stats.thisWeekCompleted} / ${stats.thisWeekTotal}`;
+    document.getElementById('monthStats').textContent = `${stats.thisMonthCompleted} / ${stats.thisMonthTotal}`;
+    document.getElementById('allTimeStats').textContent = `${stats.allCompleted} / ${stats.allTotal}`;
+}
+
+function updateAudioTrack(index) {
+  if (index >= 0 && index < values.length) {
+    const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
+    const audioUrl = values[index][1];
+    const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
+    document.getElementById('trackId').innerText = trackId;
+    document.getElementById('audioPlayer').src = audioUrl;
+    document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
+    resetInput();
+    resetAttemptCount(); // Reset attempt count
+    updatePlayPauseIcon(); // Ensure the play/pause icon is correct
+
+    setTimeout(() => {
+      document.getElementById('audioPlayer').play();
+      updatePlayPauseIcon(); // Update the play/pause icon after playing
+    }, 2000);
+
+    // Auto-focus on the first input box
+    const firstInputBox = document.querySelector('.inline-input');
+    if (firstInputBox) {
+      firstInputBox.focus();
+    }
+  }
+
+  // Hide the "Next Track" and "Previous Track" buttons
+  document.getElementById('nextTrackButtonContainer').classList.add('hidden');
+}
+
+function updatePlayPauseIcon() {
+  const audioPlayer = document.getElementById('audioPlayer');
+  const playPauseIcon = document.getElementById('playPauseIcon');
+  if (audioPlayer.paused) {
+    playPauseIcon.classList.remove('fa-pause');
+    playPauseIcon.classList.add('fa-play');
+  } else {
+    playPauseIcon.classList.remove('fa-play');
+    playPauseIcon.classList.add('fa-pause');
+  }
+}
+
+
+function resetAttemptCount() {
+  for (let key in attemptCount) {
+    if (attemptCount.hasOwnProperty(key)) {
+      attemptCount[key] = 0;
+    }
+  }
+}
+
+function formatTrackInfo(trackInfo) {
+  return trackInfo.replace(/\b(\d+)._{3}\b/g, match => {
+    const position = match.split('.')[0];
+    const placeholderText = match;
+    return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" style="width: ${placeholderText.length * 10}px;" onfocus="clearInputOnFocus(event)" onblur="checkInlineAnswer(this)">`;
+  });
+}
+
+function showNext() {
+  if (currentIndex < values.length - 1) {
+    currentIndex++;
+    updateAudioTrack(currentIndex);
+  //  requestFullScreen(); // Request full-screen mode when showing the next track
+  }
+}
+
+function showPrevious() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    updateAudioTrack(currentIndex);
+  //  requestFullScreen(); // Request full-screen mode when showing the previous track
+  }
+}
+
+function jumpForward() {
+  currentIndex = Math.min(currentIndex + 10, values.length - 1);
+  updateAudioTrack(currentIndex);
+ // requestFullScreen(); // Request full-screen mode when jumping forward
+
+}
+
+function jumpBackward() {
+  currentIndex = Math.max(currentIndex - 10, 0);
+  updateAudioTrack(currentIndex);
+ // requestFullScreen(); // Request full-screen mode when jumping backward
+
+}
+
+function resetInput() {
+  document.getElementById('result').innerHTML = '';
+}
+
+function togglePlayPause() {
+  const audioPlayer = document.getElementById('audioPlayer');
+  if (audioPlayer.paused) {
+    audioPlayer.play();
+  } else {
+    audioPlayer.pause();
+  }
+  updatePlayPauseIcon();
+}
+
+function updatePlayPauseIcon() {
+  const audioPlayer = document.getElementById('audioPlayer');
+  const playPauseIcon = document.getElementById('playPauseIcon');
+  if (audioPlayer.paused) {
+    playPauseIcon.classList.remove('fa-pause');
+    playPauseIcon.classList.add('fa-play');
+  } else {
+    playPauseIcon.classList.remove('fa-play');
+    playPauseIcon.classList.add('fa-pause');
+  }
+}
+
+
+const attemptCount = {};
+            
+//start fc core compare
+function checkInlineAnswer(inputElement) {
+  const position = parseInt(inputElement.dataset.position);
+  const userAnswer = inputElement.value.trim().toLowerCase();
+  const answerKey = values[currentIndex][5]; // Assuming the answer key is in the 6th column
+  let correct = false;
+
+  if (!attemptCount[position]) {
+    attemptCount[position] = 0;
+  }
+
+  const matches = answerKey.match(/(\d+).\s*([^\d]+)/g);
+
+  if (matches) {
+    matches.forEach(entry => {
+      const match = entry.trim().match(/^(\d+).\s*([^\d]+)/);
+      if (match) {
+        const pos = parseInt(match[1]);
+        const word = match[2].trim().toLowerCase();
+
+        if (word === userAnswer && pos === position) {
+          inputElement.classList.add('correct');
+          inputElement.value = word + ' ✔';
+          inputElement.setAttribute('readonly', true);
+          inputElement.setAttribute('tabindex', '-1'); // Disable tabbing into the correct input
+          correct = true;
+          attemptCount[position] = 0; // Reset the attempt count for the correct position
+          inputElement.removeEventListener('click', clearIncorrectInput);
+          inputElement.removeEventListener('focus', clearIncorrectInput);
         }
-      })
-      .catch(error => console.error('Error loading HTML:', error));
+      }
+    });
+  }
+
+  if (!correct && userAnswer) {
+    attemptCount[position]++;
+    if (attemptCount[position] > 3) {
+      const hint = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
+      displayMessage(`Try: ${hint}`, 'purple', true); // Set isPopup to true
+      
+      // Log the mistake
+      const date = new Date();
+      logMistakeData(
+        values[currentIndex][0], // trackId
+        'test user 1', // studentName
+        'fill-in-blank audio', // exerciseType
+        date,
+        hint // mistakes
+      );
+
+    } else {
+      inputElement.value = `${userAnswer} ✘`;
+      inputElement.classList.add('incorrect-with-x');
+      inputElement.addEventListener('focus', clearIncorrectInput);
+    }
+  } else if (!correct) {
+    inputElement.value = ''; // Clear the input if it's incorrect and empty
+  }
+
+  if (correct) {
+    moveToNextInput();
+    checkAllInputsCorrect();
+  }
+}
+    
+//end fc
+    
+    //display mes
+function displayMessage(message, color, isPopup = false) {
+  if (isPopup) {
+    showPopupMessage(message);
+  } else {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `<div style="text-align: center; color: ${color}; font-style: italic;">${message}</div>`;
+    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+    
+function showPopupMessage(message) {
+  const popup = document.createElement('div');
+  popup.classList.add('popup-message');
+  popup.innerHTML = `${message} <br><button onclick="closePopupMessage(this)" id="popupCloseButton"><i class="fas fa-times"></i></button>`;
+  document.body.appendChild(popup);
+
+  setTimeout(() => {
+    popup.classList.add('show');
+  }, 10); // Small delay to ensure the element is added to the DOM
+
+  const closeButton = popup.querySelector('button');
+  closeButton.focus();
+
+  // Add event listener for keydown events
+  document.addEventListener('keydown', handlePopupKeydown);
+}
+
+function closePopupMessage(button) {
+  const popup = button.parentElement;
+  popup.classList.remove('show');
+  setTimeout(() => {
+    document.body.removeChild(popup);
+    if (button.previousSibling.nodeValue.includes("Good job! All are correct!")) {
+      showNext(); // Move to the next track after closing the popup
+    }
+  }, 300); // Allow some time for the hiding animation
+
+  // Remove the keydown event listener when the popup is closed
+  document.removeEventListener('keydown', handlePopupKeydown);
+}
+
+function handlePopupKeydown(event) {
+  if (event.key === 'Tab' || event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault(); // Prevent default action for Tab and Space
+    const closeButton = document.getElementById('popupCloseButton');
+    if (closeButton) {
+      closeButton.click();
+    }
+  }
+}
+
+          //end display mes func
+function clearIncorrectInput() {
+  this.value = '';
+  this.classList.remove('incorrect-with-x');
+  this.removeEventListener('focus', clearIncorrectInput);
+}
+function moveToNextInput() {
+  const nextInput = document.querySelector('.inline-input:not([readonly])');
+  if (nextInput) {
+    nextInput.focus();
+  }
+}
+function handleFocus(event) {
+  const target = event.target;
+  if (target.classList.contains('correct')) {
+    target.blur();
+  }
+}
+
+function checkAllInputsCorrect() {
+  const allInputs = document.querySelectorAll('.inline-input');
+  let allCorrect = true;
+  allInputs.forEach(input => {
+    if (!input.hasAttribute('readonly')) {
+      allCorrect = false;
+    }
+  });
+
+  if (allCorrect) {
+    showPopupMessage("Good job! All are correct!");
+ // Log completion data to Google Sheets
+        logCompletionData();
+  }
+}
+
+document.addEventListener('focusin', handleFocus);
+
+function preventFocus(event) {
+  const target = event.target;
+  if (target.classList.contains('correct')) {
+    target.blur();
+  }
+}
+
+document.addEventListener('input', function (event) {
+  if (event.target.classList.contains('inline-input')) {
+    const inputElement = event.target;
+    inputElement.style.width = `${(inputElement.value.length + 1) * 10}px`; // Adjust width based on input length
+  }
+});
+
+document.addEventListener('keydown', function(event) {
+ if (event.key === 'Enter') {
+    event.preventDefault();
+    togglePlayPause();
+  } else if (event.key === 'ArrowLeft') {
+    showPrevious();
+  } else if (event.key === 'ArrowRight') {
+    showNext();
+  } else if (event.key === 'Shift' && event.code === 'ShiftLeft') {
+    document.getElementById('audioPlayer').currentTime -= 10;
+  } else if (event.key === 'Shift' && event.code === 'ShiftRight') {
+    document.getElementById('audioPlayer').currentTime += 10;
+  }
+});
+
+    // handling error: autocopy to next inputbox (seem not working but include to be sure)
+function clearInputOnFocus(event) {
+  const inputElement = event.target;
+  if (!inputElement.hasAttribute('readonly')) {
+    inputElement.value = '';
+    inputElement.classList.remove('incorrect-with-x');
+  }
+}
+
+//logginng to ggsheet mistake:
+
+function logMistakeData(trackId, studentName, exerciseType, date, mistakes) {
+  const url = 'https://script.google.com/macros/s/AKfycbw1QgQ7eAf74Ewxdi7-gszjdpovrFyqLYHrZjVpAr9X4kzmkgtz1-L_Ll9Vm6tbwSpm/exec';
+    const formattedDate = `${date.toLocaleDateString()} ${date.getHours()}:${date.getMinutes()}`;
+
+  const data = {
+    trackId: trackId,
+    studentName: studentName,
+    exerciseType: exerciseType,
+    date: formattedDate,
+    mistakes: mistakes
+  };
+  // Add the mistake to the global mistakes array
+  mistakesAtThreeAttempts.push(mistakes);
+
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }).then(response => {
+    console.log('Mistake data logged successfully:', data);
+  }).catch(error => {
+    console.error('Error logging mistake data:', error);
+  });
+}
+
+// full screen mode
+function requestFullScreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.mozRequestFullScreen) { // Firefox
+    elem.mozRequestFullScreen();
+  } else if (elem.webkitRequestFullscreen) { // Chrome, Safari and Opera
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { // IE/Edge
+    elem.msRequestFullscreen();
+  }
+}
+// Exit full-screen mode 
+document.getElementById('mainTitle').addEventListener('click', exitFullScreen);
+document.getElementById('mainTitle').addEventListener('touchstart', exitFullScreen);
+document.getElementById('mainFooter').addEventListener('click', exitFullScreen);
+document.getElementById('mainFooter').addEventListener('touchstart', exitFullScreen);
+document.getElementById('mainH2').addEventListener('click', exitFullScreen);
+document.getElementById('mainH2').addEventListener('touchstart', exitFullScreen);
+// Add event listener for focus on input boxes
+document.addEventListener('focusin', function(event) {
+  if (event.target.classList.contains('inline-input')) {
+    requestFullScreen();
+  }
+});
+
+
+function exitFullScreen() {
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  } else if (document.mozFullScreenElement) { // Firefox
+    document.mozCancelFullScreen();
+  } else if (document.webkitFullscreenElement) { // Chrome, Safari and Opera
+    document.webkitExitFullscreen();
+  } else if (document.msFullscreenElement) { // IE/Edge
+    document.msExitFullscreen();
+  }
+}
+
+
+let mistakesAtThreeAttempts = [];
+
+// log to ggsheet result:
+function logCompletionData() {
+  const url = 'https://script.google.com/macros/s/AKfycbxmXSuXneMUZMGiYeqWJaTdrRdYKVcOk18JKDGkEHldZa5ozNq541916FVNZbBgGu1N/exec';
+  const date = new Date();
+  const formattedDate = `${date.toLocaleDateString()} ${date.getHours()}:${date.getMinutes()}`;
+  const trackId = values[currentIndex][0]; // Assuming trackId is in the first column
+  const mistakes = mistakesAtThreeAttempts.length > 0 ? mistakesAtThreeAttempts.join(', ') : "none"; // Include the mistakes or "none" if there are none
+
+  const data = {
+    user: 'test user 1',
+    exerciseType: 'fill-in-blank audio',
+    date: formattedDate,
+    tasksCompleted: trackId,
+    mistakes: mistakes
+  };
+
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }).then(response => {
+    console.log('Completion data logged successfully:', data);
+    // Clear the mistakes array after logging
+    mistakesAtThreeAttempts = [];
+  }).catch(error => {
+    console.error('Error logging completion data:', error);
+  });
+}
+    
+ 
   </script>
 </body>
 </html>
+
+
