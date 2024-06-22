@@ -61,36 +61,7 @@ html, body {
       background-color: #45a049;
     }
 
-    .button-container.hidden {
-  display: none;
-}
-
-  #nextTrackButtonContainer {
-  justify-content: center;
-  margin-top: 10px;
-}
-    #nextTrackButtonContainer button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 65px;
-  height: 40px;
-  padding: 10px;
-  font-size: 16px;
-  color: #fff;
-  background-color: #4CAF50;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-    #nextTrackButtonContainer button:last-child {
-  margin-right: 0;
-}
-
-#nextTrackButtonContainer button:hover {
-  background-color: #45a049;
-}
+ 
       #audioContainer {
       display: flex;
       flex-direction: column;
@@ -100,6 +71,9 @@ html, body {
       width: 100%;
       margin: 20px 0;
     }
+    #audioPlayer:focus {
+  outline: none;
+}
 
     .track-info {
       text-align: center;
@@ -265,13 +239,7 @@ html, body {
   <div class="track-info" id="trackInfo"></div>
 
 <input type="text" id="hiddenInput" style="position: absolute; left: -9999px;">
-  <div id="result"></div>
-
-<div id="result"></div>
-<div class="button-container hidden" id="nextTrackButtonContainer">
-  <button onclick="showPrevious()"><i class="fas fa-arrow-left"></i></button>
-  <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
-</div>
+ 
   
   <div id="statisticsBox" class="statistics-box">
   <h3>Completion Stats</h3>
@@ -383,7 +351,6 @@ function showNext() {
   if (currentIndex < values.length - 1) {
     currentIndex++;
     updateAudioTrack(currentIndex);
-  //  requestFullScreen(); // Request full-screen mode when showing the next track
   }
 }
 
@@ -391,27 +358,22 @@ function showPrevious() {
   if (currentIndex > 0) {
     currentIndex--;
     updateAudioTrack(currentIndex);
-  //  requestFullScreen(); // Request full-screen mode when showing the previous track
   }
 }
 
 function jumpForward() {
   currentIndex = Math.min(currentIndex + 10, values.length - 1);
   updateAudioTrack(currentIndex);
- // requestFullScreen(); // Request full-screen mode when jumping forward
 
 }
 
 function jumpBackward() {
   currentIndex = Math.max(currentIndex - 10, 0);
   updateAudioTrack(currentIndex);
- // requestFullScreen(); // Request full-screen mode when jumping backward
 
 }
 
-function resetInput() {
-  document.getElementById('result').innerHTML = '';
-}
+
 
 function togglePlayPause() {
   const audioPlayer = document.getElementById('audioPlayer');
@@ -474,21 +436,27 @@ function checkInlineAnswer(inputElement) {
 
   if (!correct && userAnswer) {
     attemptCount[position]++;
-    if (attemptCount[position] > 3) {
-      const hint = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
-      displayMessage(`Try: ${hint}`, 'purple', true); // Set isPopup to true
-      
-      // Log the mistake
-      const date = new Date();
-      logMistakeData(
-        values[currentIndex][0], // trackId
-        'test user 1', // studentName
-        'fill-in-blank audio', // exerciseType
-        date,
-        hint // mistakes
-      );
+    
+if (attemptCount[position] > 3) {
+  const hint = matches.find(entry => entry.startsWith(position + '.')).split('. ')[1].trim();
+  displayMessage(`Try: ${hint}`, 'purple', true); // Set isPopup to true
 
-    } else {
+  // Log the mistake
+  const date = new Date();
+  logMistakeData(
+    values[currentIndex][0], // trackId
+    'test user 1', // studentName
+    'fill-in-blank audio', // exerciseType
+    date,
+    hint // mistakes
+  );
+
+  // Move the cursor to the audioPlayer area
+  const audioPlayer = document.getElementById('audioPlayer');
+  if (audioPlayer) {
+    audioPlayer.focus();
+  }
+} else {
       inputElement.value = `${userAnswer} ✘`;
       inputElement.classList.add('incorrect-with-x');
       inputElement.addEventListener('focus', clearIncorrectInput);
@@ -586,9 +554,17 @@ function checkAllInputsCorrect() {
   });
 
   if (allCorrect) {
+  
     showPopupMessage("Good job! All are correct!");
- // Log completion data to Google Sheets
-        logCompletionData();
+
+    // Make the current input box lose focus
+       const audioPlayer = document.getElementById('audioPlayer');
+    if (audioPlayer) {
+      audioPlayer.focus();
+    }   
+      // Log completion data to Google Sheets
+      logCompletionData();
+  
   }
 }
 
