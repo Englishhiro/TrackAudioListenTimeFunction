@@ -554,17 +554,18 @@ function checkAllInputsCorrect() {
   });
 
   if (allCorrect) {
-  
-    showPopupMessage("Good job! All are correct!");
-
     // Make the current input box lose focus
-       const audioPlayer = document.getElementById('audioPlayer');
-    if (audioPlayer) {
-      audioPlayer.focus();
-    }   
+    const currentInput = document.activeElement;
+    if (currentInput.classList.contains('inline-input')) {
+      currentInput.blur();
+    }
+
+    // Show popup message after a brief delay (to allow focus change)
+    setTimeout(() => {
+      showPopupMessage("Good job! All are correct!");
       // Log completion data to Google Sheets
       logCompletionData();
-  
+    }, 100); // Adjust delay as necessary
   }
 }
 
