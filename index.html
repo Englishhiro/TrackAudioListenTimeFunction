@@ -553,11 +553,11 @@ function checkAllInputsCorrect() {
     }
   });
 
-  if (allCorrect) {
-    // Make the current input box lose focus
-    const currentInput = document.activeElement;
-    if (currentInput.classList.contains('inline-input')) {
-      currentInput.blur();
+ if (allCorrect) {
+    // Move the cursor to the play button area
+    const playButton = document.getElementById('playPauseButton');
+    if (playButton) {
+      playButton.focus();
     }
 
     // Show popup message after a brief delay (to allow focus change)
