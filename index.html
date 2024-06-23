@@ -61,36 +61,7 @@ html, body {
       background-color: #45a049;
     }
 
-    .button-container.hidden {
-  display: none;
-}
-
-  #nextTrackButtonContainer {
-  justify-content: center;
-  margin-top: 10px;
-}
-    #nextTrackButtonContainer button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 65px;
-  height: 40px;
-  padding: 10px;
-  font-size: 16px;
-  color: #fff;
-  background-color: #4CAF50;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-    #nextTrackButtonContainer button:last-child {
-  margin-right: 0;
-}
-
-#nextTrackButtonContainer button:hover {
-  background-color: #45a049;
-}
+ 
       #audioContainer {
       display: flex;
       flex-direction: column;
@@ -163,7 +134,7 @@ html, body {
     }
 .popup-message {
   position: fixed;
-  top: 47%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 20px 30px;
@@ -342,8 +313,7 @@ function updateAudioTrack(index) {
     }
   }
 
-  // Hide the "Next Track" and "Previous Track" buttons
-  document.getElementById('nextTrackButtonContainer').classList.add('hidden');
+
 }
 
 function updatePlayPauseIcon() {
