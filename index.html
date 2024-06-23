@@ -295,7 +295,6 @@ function updateAudioTrack(index) {
     const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
     const audioUrl = values[index][1];
     const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
-  
     document.getElementById('trackId').innerText = trackId;
     document.getElementById('audioPlayer').src = audioUrl;
     document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
@@ -303,21 +302,21 @@ function updateAudioTrack(index) {
     resetAttemptCount(); // Reset attempt count
     updatePlayPauseIcon(); // Ensure the play/pause icon is correct
 
-    setTimeout(() => {
-      document.getElementById('audioPlayer').play();
-      updatePlayPauseIcon(); // Update the play/pause icon after playing
-    }, 2000);
-
-    // Auto-focus on the first input box
+    // Auto-focus on the first input box when the play button is clicked for the first time
+    const audioPlayer = document.getElementById('audioPlayer');
     const firstInputBox = document.querySelector('.inline-input');
-    if (firstInputBox) {
-      firstInputBox.focus();
-    }
+    
+    const focusFirstInputOnPlay = () => {
+      if (firstInputBox) {
+        firstInputBox.focus();
+      }
+      // Remove the event listener after the first play
+      audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
+    };
+
+    audioPlayer.addEventListener('play', focusFirstInputOnPlay);
   }
-
-
 }
-
 function updatePlayPauseIcon() {
   const audioPlayer = document.getElementById('audioPlayer');
   const playPauseIcon = document.getElementById('playPauseIcon');
