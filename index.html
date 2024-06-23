@@ -290,6 +290,10 @@ function updateStatsBox() {
     document.getElementById('allTimeStats').textContent = `${stats.allCompleted} / ${stats.allTotal}`;
 }
 
+// Variable to store the last focused input box
+let lastFocusedInputBox = null;
+
+// Function to update the audio track
 function updateAudioTrack(index) {
   if (index >= 0 && index < values.length) {
     const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
@@ -302,21 +306,17 @@ function updateAudioTrack(index) {
     resetAttemptCount(); // Reset attempt count
     updatePlayPauseIcon(); // Ensure the play/pause icon is correct
 
-    // Auto-focus on the first input box when the play button is clicked for the first time
     const audioPlayer = document.getElementById('audioPlayer');
-    const firstInputBox = document.querySelector('.inline-input');
-    
-    const focusFirstInputOnPlay = () => {
-      if (firstInputBox) {
-        firstInputBox.focus();
-      }
-      // Remove the event listener after the first play
-      audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
-    };
 
-    audioPlayer.addEventListener('play', focusFirstInputOnPlay);
+    // Remove previous event listeners to avoid duplication
+    audioPlayer.removeEventListener('pause', focusLastInputOnPause);
+
+    // Add event listener to return focus to the last focused input box when paused
+    audioPlayer.addEventListener('pause', focusLastInputOnPause);
   }
 }
+
+// Function to update the play/pause icon
 function updatePlayPauseIcon() {
   const audioPlayer = document.getElementById('audioPlayer');
   const playPauseIcon = document.getElementById('playPauseIcon');
@@ -328,6 +328,20 @@ function updatePlayPauseIcon() {
     playPauseIcon.classList.add('fa-pause');
   }
 }
+
+// Function to return focus to the last focused input box when the track is paused
+function focusLastInputOnPause() {
+  if (lastFocusedInputBox) {
+    lastFocusedInputBox.focus();
+  }
+}
+
+// Event listener to keep track of the last focused input box
+document.addEventListener('focusin', (event) => {
+  if (event.target.classList.contains('inline-input')) {
+    lastFocusedInputBox = event.target;
+  }
+});
 
 
 function resetAttemptCount() {
