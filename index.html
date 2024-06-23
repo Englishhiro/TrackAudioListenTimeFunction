@@ -292,7 +292,9 @@ function updateStatsBox() {
 
 // Variable to store the last focused input box
 let lastFocusedInputBox = null;
-
+// Variable to track if the track has been played for the first time
+let isFirstPlay = true;
+    
 // Function to update the audio track
 function updateAudioTrack(index) {
   if (index >= 0 && index < values.length) {
@@ -307,9 +309,14 @@ function updateAudioTrack(index) {
     updatePlayPauseIcon(); // Ensure the play/pause icon is correct
 
     const audioPlayer = document.getElementById('audioPlayer');
+    const firstInputBox = document.querySelector('.inline-input');
 
     // Remove previous event listeners to avoid duplication
+    audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
     audioPlayer.removeEventListener('pause', focusLastInputOnPause);
+
+        // Add event listener to auto-focus on the first input box on first play
+    audioPlayer.addEventListener('play', focusFirstInputOnPlay);
 
     // Add event listener to return focus to the last focused input box when paused
     audioPlayer.addEventListener('pause', focusLastInputOnPause);
@@ -329,6 +336,17 @@ function updatePlayPauseIcon() {
   }
 }
 
+// Function to auto-focus on the first input box on the first play
+function focusFirstInputOnPlay() {
+  if (isFirstPlay) {
+    const firstInputBox = document.querySelector('.inline-input');
+    if (firstInputBox) {
+      firstInputBox.focus();
+    }
+    isFirstPlay = false; // Set to false after the first play
+  }
+}
+    
 // Function to return focus to the last focused input box when the track is paused
 function focusLastInputOnPause() {
   if (lastFocusedInputBox) {
