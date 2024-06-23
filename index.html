@@ -233,7 +233,8 @@ html, body {
     <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
     <button onclick="jumpForward()"><i class="fas fa-fast-forward"></i></button>
   </div>
-  <div class="track-info" id="trackInfo"></div>
+  <div class="track-info" id="trackInfo">How to escape full screen view: Click on any part of the Completion stats, Track, Fill in the blank title areas</div>
+
 
 <input type="text" id="hiddenInput" style="position: absolute; left: -9999px;">
   <div id="result"></div>
@@ -294,6 +295,7 @@ function updateAudioTrack(index) {
     const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
     const audioUrl = values[index][1];
     const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
+  
     document.getElementById('trackId').innerText = trackId;
     document.getElementById('audioPlayer').src = audioUrl;
     document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
@@ -648,6 +650,8 @@ document.getElementById('mainFooter').addEventListener('click', exitFullScreen);
 document.getElementById('mainFooter').addEventListener('touchstart', exitFullScreen);
 document.getElementById('mainH2').addEventListener('click', exitFullScreen);
 document.getElementById('mainH2').addEventListener('touchstart', exitFullScreen);
+document.getElementById('statisticsBox').addEventListener('click', exitFullScreen);
+document.getElementById('statisticsBox').addEventListener('touchstart', exitFullScreen);
 // Add event listener for focus on input boxes
 document.addEventListener('focusin', function(event) {
   if (event.target.classList.contains('inline-input')) {
