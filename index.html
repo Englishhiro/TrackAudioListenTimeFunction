@@ -290,77 +290,59 @@ function updateStatsBox() {
     document.getElementById('allTimeStats').textContent = `${stats.allCompleted} / ${stats.allTotal}`;
 }
 
-// Variable to store the last focused input box
-let lastFocusedInputBox = null;
-// Variable to track if the track has been played for the first time
-let isFirstPlay = true;
-    
-// Function to update the audio track
 function updateAudioTrack(index) {
-  if (index >= 0 && index < values.length) {
-    const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
-    const audioUrl = values[index][1];
-    const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
-    document.getElementById('trackId').innerText = trackId;
-    document.getElementById('audioPlayer').src = audioUrl;
-    document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
-    resetInput();
-    resetAttemptCount(); // Reset attempt count
-    updatePlayPauseIcon(); // Ensure the play/pause icon is correct
+    if (index >= 0 && index < values.length) {
+        const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
+        const audioUrl = values[index][1];
+        const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
+        document.getElementById('trackId').innerText = trackId;
+        document.getElementById('audioPlayer').src = audioUrl;
+        document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
+        resetInput();
+        resetAttemptCount(); // Reset attempt count
+        updatePlayPauseIcon(); // Ensure the play/pause icon is correct
 
-    const audioPlayer = document.getElementById('audioPlayer');
-    const firstInputBox = document.querySelector('.inline-input');
+        // Auto-focus on the first input box when the play button is clicked for the first time
+        const audioPlayer = document.getElementById('audioPlayer');
+        const firstInputBox = document.querySelector('.inline-input');
+        
+        const focusFirstInputOnPlay = () => {
+            if (firstInputBox) {
+                firstInputBox.focus();
+            }
+            // Remove the event listener after the first play
+            audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
+        };
 
-    // Remove previous event listeners to avoid duplication
-    audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
-    audioPlayer.removeEventListener('pause', focusLastInputOnPause);
-
-        // Add event listener to auto-focus on the first input box on first play
-    audioPlayer.addEventListener('play', focusFirstInputOnPlay);
-
-    // Add event listener to return focus to the last focused input box when paused
-    audioPlayer.addEventListener('pause', focusLastInputOnPause);
-  }
-}
-
-// Function to update the play/pause icon
-function updatePlayPauseIcon() {
-  const audioPlayer = document.getElementById('audioPlayer');
-  const playPauseIcon = document.getElementById('playPauseIcon');
-  if (audioPlayer.paused) {
-    playPauseIcon.classList.remove('fa-pause');
-    playPauseIcon.classList.add('fa-play');
-  } else {
-    playPauseIcon.classList.remove('fa-play');
-    playPauseIcon.classList.add('fa-pause');
-  }
-}
-
-// Function to auto-focus on the first input box on the first play
-function focusFirstInputOnPlay() {
-  if (isFirstPlay) {
-    const firstInputBox = document.querySelector('.inline-input');
-    if (firstInputBox) {
-      firstInputBox.focus();
+        audioPlayer.addEventListener('play', focusFirstInputOnPlay);
     }
-    isFirstPlay = false; // Set to false after the first play
-  }
-}
-    
-// Function to return focus to the last focused input box when the track is paused
-function focusLastInputOnPause() {
-  if (lastFocusedInputBox) {
-    lastFocusedInputBox.focus();
-  }
 }
 
-// Event listener to keep track of the last focused input box
+function updatePlayPauseIcon() {
+    const audioPlayer = document.getElementById('audioPlayer');
+    const playPauseIcon = document.getElementById('playPauseIcon');
+    if (audioPlayer.paused) {
+        playPauseIcon.classList.remove('fa-pause');
+        playPauseIcon.classList.add('fa-play');
+    } else {
+        playPauseIcon.classList.remove('fa-play');
+        playPauseIcon.classList.add('fa-pause');
+    }
+}
+
+// Event listener to track the last focused input box
 document.addEventListener('focusin', (event) => {
-  if (event.target.classList.contains('inline-input')) {
-    lastFocusedInputBox = event.target;
-  }
+    if (event.target.classList.contains('inline-input')) {
+        lastFocusedInput = event.target;
+    }
 });
 
+// Set focus back to the last focused input box when the audio is paused
+document.getElementById('audioPlayer').addEventListener('pause', () => {
+    if (lastFocusedInput) {
+        lastFocusedInput.focus();
+    }
+});
 
 function resetAttemptCount() {
   for (let key in attemptCount) {
