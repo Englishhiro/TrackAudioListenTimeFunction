@@ -304,46 +304,33 @@ function updateAudioTrack(index) {
 
         // Auto-focus on the first input box when the play button is clicked for the first time
         const audioPlayer = document.getElementById('audioPlayer');
-        const firstInputBox = document.querySelector('.inline-input');
+        let firstInputBox = document.querySelector('.inline-input');
         
-        const focusFirstInputOnPlay = () => {
-            if (firstInputBox) {
+        const focusNextInputOnPlay = () => {
+            const nextInputBox = findNextInputBox();
+            if (nextInputBox) {
+                nextInputBox.focus();
+            } else if (firstInputBox) {
                 firstInputBox.focus();
             }
             // Remove the event listener after the first play
-            audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
+            audioPlayer.removeEventListener('play', focusNextInputOnPlay);
         };
 
-        audioPlayer.addEventListener('play', focusFirstInputOnPlay);
+        audioPlayer.addEventListener('play', focusNextInputOnPlay);
     }
 }
 
-function updatePlayPauseIcon() {
-    const audioPlayer = document.getElementById('audioPlayer');
-    const playPauseIcon = document.getElementById('playPauseIcon');
-    if (audioPlayer.paused) {
-        playPauseIcon.classList.remove('fa-pause');
-        playPauseIcon.classList.add('fa-play');
-    } else {
-        playPauseIcon.classList.remove('fa-play');
-        playPauseIcon.classList.add('fa-pause');
+function findNextInputBox() {
+    const inputs = document.querySelectorAll('.inline-input');
+    for (const input of inputs) {
+        if (!input.classList.contains('correct')) {
+            return input;
+        }
     }
+    return null;
 }
-
-// Event listener to track the last focused input box
-document.addEventListener('focusin', (event) => {
-    if (event.target.classList.contains('inline-input')) {
-        lastFocusedInput = event.target;
-    }
-});
-
-// Set focus back to the last focused input box when the audio is paused
-document.getElementById('audioPlayer').addEventListener('pause', () => {
-    if (lastFocusedInput) {
-        lastFocusedInput.focus();
-    }
-});
-
+    
 function resetAttemptCount() {
   for (let key in attemptCount) {
     if (attemptCount.hasOwnProperty(key)) {
@@ -476,7 +463,12 @@ function checkInlineAnswer(inputElement) {
 }
     
 //end fc
-    
+    function moveToNextInput() {
+    const nextInput = findNextInputBox();
+  if (nextInput) {
+    nextInput.focus();
+  }
+}
     //display mes
 function displayMessage(message, color, isPopup = false) {
   if (isPopup) {
@@ -535,12 +527,7 @@ function clearIncorrectInput() {
   this.classList.remove('incorrect-with-x');
   this.removeEventListener('focus', clearIncorrectInput);
 }
-function moveToNextInput() {
-  const nextInput = document.querySelector('.inline-input:not([readonly])');
-  if (nextInput) {
-    nextInput.focus();
-  }
-}
+
 function handleFocus(event) {
   const target = event.target;
   if (target.classList.contains('correct')) {
