@@ -404,17 +404,6 @@ function togglePlayPause() {
   updatePlayPauseIcon();
 }
 
-function updatePlayPauseIcon() {
-  const audioPlayer = document.getElementById('audioPlayer');
-  const playPauseIcon = document.getElementById('playPauseIcon');
-  if (audioPlayer.paused) {
-    playPauseIcon.classList.remove('fa-pause');
-    playPauseIcon.classList.add('fa-play');
-  } else {
-    playPauseIcon.classList.remove('fa-play');
-    playPauseIcon.classList.add('fa-pause');
-  }
-}
 
 
 const attemptCount = {};
