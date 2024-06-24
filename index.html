@@ -306,10 +306,12 @@ function updateAudioTrack(index) {
         const audioPlayer = document.getElementById('audioPlayer');
         const firstInputBox = document.querySelector('.inline-input');
         
-        const focusFirstInputOnPlay = () => {
+       const focusFirstInputOnPlay = () => {
             if (firstInputBox) {
                 firstInputBox.focus();
-                firstInputBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // Scroll the input into view smoothly
+                  // Scroll the mainH2 element into view
+                const mainH2 = document.getElementById('mainH2');
+                mainH2.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             // Remove the event listener after the first play
             audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
