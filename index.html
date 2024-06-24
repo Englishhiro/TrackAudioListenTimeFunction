@@ -319,17 +319,6 @@ function updateAudioTrack(index) {
     }
 }
 
-function updatePlayPauseIcon() {
-    const audioPlayer = document.getElementById('audioPlayer');
-    const playPauseIcon = document.getElementById('playPauseIcon');
-    if (audioPlayer.paused) {
-        playPauseIcon.classList.remove('fa-pause');
-        playPauseIcon.classList.add('fa-play');
-    } else {
-        playPauseIcon.classList.remove('fa-play');
-        playPauseIcon.classList.add('fa-pause');
-    }
-}
 
 // Event listener to track the last focused input box
 document.addEventListener('focusin', (event) => {
