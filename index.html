@@ -307,15 +307,15 @@ function updateAudioTrack(index) {
         const audioPlayer = document.getElementById('audioPlayer');
         const firstInputBox = document.querySelector('.inline-input');
         
-        const focusFirstInputOnPlay = () => {
-            if (firstInputBox) {
-                firstInputBox.focus();
-                firstInputBox.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Scroll the input into view smoothly
-
-            }
-            // Remove the event listener after the first play
-            audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
-        };
+    const focusFirstInputOnPlay = () => {
+    if (firstInputBox) {
+        firstInputBox.focus();
+        setTimeout(() => {
+            firstInputBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300); // Adjust delay as needed
+    }
+    audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
+};
 
         audioPlayer.addEventListener('play', focusFirstInputOnPlay);
     }
