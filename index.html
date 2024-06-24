@@ -352,7 +352,8 @@ function formatTrackInfo(trackInfo) {
   return trackInfo.replace(/\b(\d+)._{3}\b/g, match => {
     const position = match.split('.')[0];
     const placeholderText = match;
-    return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" style="width: ${placeholderText.length * 10}px;" onfocus="clearInputOnFocus(event)" onblur="checkInlineAnswer(this)">`;
+    return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" autocomplete="off" style="width: ${placeholderText.length * 10}px;" onfocus="clearInputOnFocus(event)" onblur="checkInlineAnswer(this)">`;
+
   });
 }
 
@@ -609,7 +610,7 @@ document.addEventListener('keydown', function(event) {
     // handling error: autocopy to next inputbox (seem not working but include to be sure)
 function clearInputOnFocus(event) {
   const inputElement = event.target;
-  if (!inputElement.hasAttribute('readonly')) {
+  if (inputElement.classList.contains('incorrect-with-x')) {
     inputElement.value = '';
     inputElement.classList.remove('incorrect-with-x');
   }
