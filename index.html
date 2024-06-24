@@ -309,7 +309,7 @@ function updateAudioTrack(index) {
         const focusFirstInputOnPlay = () => {
             if (firstInputBox) {
                 firstInputBox.focus();
-                firstInputBox.scrollIntoView({ behavior: 'smooth', block: 'neareast' }); // Scroll the input into view smoothly
+                firstInputBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // Scroll the input into view smoothly
             }
             // Remove the event listener after the first play
             audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
