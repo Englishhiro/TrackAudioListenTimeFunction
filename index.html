@@ -434,7 +434,6 @@ function checkInlineAnswer(inputElement) {
         const word = match[2].trim().toLowerCase();
 
         if (word === userAnswer && pos === position) {
-         
           inputElement.classList.add('correct');
           inputElement.value = word + ' ✔';
           inputElement.setAttribute('readonly', true);
@@ -444,6 +443,7 @@ function checkInlineAnswer(inputElement) {
           inputElement.removeEventListener('click', clearIncorrectInput);
           inputElement.removeEventListener('focus', clearIncorrectInput);
             // Ensure the input element is styled correctly
+          inputElement.classList.remove('incorrect-with-x');
           inputElement.style.color = 'green';
           inputElement.style.borderColor = 'green';
  
