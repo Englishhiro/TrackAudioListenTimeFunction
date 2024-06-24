@@ -309,7 +309,9 @@ function updateAudioTrack(index) {
         const focusFirstInputOnPlay = () => {
             if (firstInputBox) {
                 firstInputBox.focus();
-                firstInputBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // Scroll the input into view smoothly
+                  // Scroll the mainH2 element into view
+                const mainH2 = document.getElementById('mainH2');
+                mainH2.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             // Remove the event listener after the first play
             audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
@@ -586,6 +588,9 @@ document.addEventListener('input', function (event) {
   if (event.target.classList.contains('inline-input')) {
     const inputElement = event.target;
     inputElement.style.width = `${(inputElement.value.length + 1) * 10}px`; // Adjust width based on input length
+      // Scroll the mainH2 element into view
+        const mainH2 = document.getElementById('mainH2');
+        mainH2.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 });
 
@@ -606,11 +611,15 @@ document.addEventListener('keydown', function(event) {
 
     // handling error: autocopy to next inputbox (seem not working but include to be sure)
 function clearInputOnFocus(event) {
-  const inputElement = event.target;
-  if (!inputElement.hasAttribute('readonly')) {
+    const inputElement = event.target;
     inputElement.value = '';
     inputElement.classList.remove('incorrect-with-x');
-  }
+    
+    // Scroll the input element into view, but not too high
+    const mainH2 = document.getElementById('mainH2');
+    mainH2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    inputElement.removeEventListener('focus', clearIncorrectInput);
 }
 
 //logginng to ggsheet mistake:
