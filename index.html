@@ -610,7 +610,7 @@ document.addEventListener('keydown', function(event) {
     // handling error: autocopy to next inputbox (seem not working but include to be sure)
 function clearInputOnFocus(event) {
   const inputElement = event.target;
-  if (inputElement.classList.contains('incorrect-with-x')) {
+  if (!inputElement.hasAttribute('readonly')) {
     inputElement.value = '';
     inputElement.classList.remove('incorrect-with-x');
   }
