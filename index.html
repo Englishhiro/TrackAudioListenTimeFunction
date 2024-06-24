@@ -443,7 +443,7 @@ function checkInlineAnswer(inputElement) {
           inputElement.removeEventListener('click', clearIncorrectInput);
           inputElement.removeEventListener('focus', clearIncorrectInput);
             // Ensure the input element is styled correctly
-          inputElement.classList.remove('incorrect-with-x');
+          inputElement.value = inputElement.value.replace(/ ✘$/, '');
           inputElement.style.color = 'green';
           inputElement.style.borderColor = 'green';
  
