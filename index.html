@@ -89,7 +89,7 @@ html, body {
       text-align: center;
       font-size: 16px;
       outline: none;
-      transition: width 0.3s ease; /* Smooth transition for width change */
+      transition: width 0.3s ease; 
     }
 
     .inline-input.correct {
@@ -145,14 +145,14 @@ html, body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   text-align: center;
   z-index: 1000;
-  display: none; /* Hidden by default */
-  max-width: 80%; /* Ensure it doesn't get too wide on larger screens */
-  font-size: 20px; /* Make the text larger */
-  color: navy; /* Make the text navy */
+  display: none; 
+  max-width: 80%; 
+  font-size: 20px; 
+  color: navy; 
 }
 
 .popup-message.show {
-  display: block; /* Show the popup when it has the class "show" */
+  display: block; 
 }
 
 .popup-message button {
@@ -171,7 +171,7 @@ html, body {
 }
 
 .popup-message i {
-  font-size: 20px; /* Adjust the size of the close icon */
+  font-size: 20px;
 }
 
 .popup-message button {
@@ -236,7 +236,7 @@ html, body {
     <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
     <button onclick="jumpForward()"><i class="fas fa-fast-forward"></i></button>
   </div>
-  <div class="track-info" id="trackInfo">How to escape full screen view: Click on any part of the Completion-stats, Track, Fill-in-the-blanks areas</div>
+  <div class="track-info" id="trackInfo"><i>Click on any part of the <b>Completion-stats</b>, <b>Track</b>, <b>Fill-in-the-blanks</b> areas to escape <b>full-screen view</b></i></div>
 
  
 <input type="text" id="hiddenInput" style="position: absolute; left: -9999px;" >
