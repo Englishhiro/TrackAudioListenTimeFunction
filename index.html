@@ -507,7 +507,7 @@ function displayMessage(message, color, isPopup = false) {
 function showPopupMessage(message) {
   const popup = document.createElement('div');
   popup.classList.add('popup-message');
-  popup.innerHTML = `${message} <br><button onclick="closePopupMessage(this)" id="popupCloseButton"><i class="fas fa-times"></i></button>`;
+  popup.innerHTML = `${message} <br><button onclick="closePopupMessage(this)" id="popupCloseButton">👍</button>`;
   document.body.appendChild(popup);
 
   setTimeout(() => {
