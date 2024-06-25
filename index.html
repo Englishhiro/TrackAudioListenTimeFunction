@@ -355,7 +355,21 @@ function formatTrackInfo(trackInfo) {
     const position = match.split('.')[0];
     const placeholderText = match;
    
-        return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" autocomplete="off" style="width: ${placeholderText.length * 10}px;" onfocus="clearInputOnFocus(event)" onblur="checkInlineAnswer(this)">`;
+     return `<input type="text" class="inline-input" data-position="${position}" placeholder="${placeholderText}" autocomplete="off" style="width: ${placeholderText.length * 10}px;" onfocus="clearInputOnFocus(event)" onblur="checkInlineAnswer(this)">
+            <style>
+              input[data-position="${position}"]::placeholder {
+                color: navy;
+              }
+              input[data-position="${position}"]::placeholder::before {
+                content: '${position}';
+                color: navy;
+              }
+              input[data-position="${position}"]::placeholder::after {
+                content: '${match.replace(position, '')}';
+                color: inherit;
+              }
+            </style>`;
+
 
 
   });
