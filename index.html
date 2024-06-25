@@ -643,35 +643,7 @@ function clearInputOnFocus(event) {
   }
 }
 
-//logginng to ggsheet mistake:
 
-function logMistakeData(trackId, studentName, exerciseType, date, mistakes) {
-  const url = 'https://script.google.com/macros/s/AKfycbw1QgQ7eAf74Ewxdi7-gszjdpovrFyqLYHrZjVpAr9X4kzmkgtz1-L_Ll9Vm6tbwSpm/exec';
-    const formattedDate = `${date.toLocaleDateString()} ${date.getHours()}:${date.getMinutes()}`;
-
-  const data = {
-    trackId: trackId,
-    studentName: studentName,
-    exerciseType: exerciseType,
-    date: formattedDate,
-    mistakes: mistakes
-  };
-  // Add the mistake to the global mistakes array
-  mistakesAtThreeAttempts.push(mistakes);
-
-  fetch(url, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  }).then(response => {
-    console.log('Mistake data logged successfully:', data);
-  }).catch(error => {
-    console.error('Error logging mistake data:', error);
-  });
-}
 
 // full screen mode
 function requestFullScreen() {
@@ -724,7 +696,7 @@ function logCompletionData() {
   const date = new Date();
   const formattedDate = `${date.toLocaleDateString()} ${date.getHours()}:${date.getMinutes()}`;
   const trackId = values[currentIndex][0]; // Assuming trackId is in the first column
-  const mistakes = mistakesAtThreeAttempts.length > 0 ? mistakesAtThreeAttempts.join(', ') : "none"; // Include the mistakes or "none" if there are none
+  const mistakes = mistakesAtThreeAttempts.length > 0 ? mistakesAtThreeAttempts.join(', ') : ""; // Include the mistakes or "none" if there are none
 
   const data = {
     user: 'test user 1',
