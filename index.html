@@ -46,7 +46,7 @@ html, body {
       padding: 10px;
       font-size: 16px;
       color: #fff;
-      background-color: #4CAF50;
+      background-color: #4681f4;
       border: none;
       border-radius: 5px;
       cursor: pointer;
@@ -58,7 +58,7 @@ html, body {
     }
 
     button:hover {
-      background-color: #45a049;
+      background-color: #5783db;
     }
 
  
@@ -160,14 +160,14 @@ html, body {
   padding: 5px 10px;
   font-size: 20px;
   color: #fff;
-  background-color: #4CAF50;
+  background-color: #4681f4;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
 .popup-message button:hover {
-  background-color: #45a049;
+  background-color: #5783db;
 }
 
 .popup-message i {
@@ -219,22 +219,48 @@ html, body {
   color: #000;
 }
 
-  
+   /* Add this style to the existing <style> block */
+   #mainH2 {
+   color: #585858;
+       display: flex;
+  align-items: center;
+  gap: 8px; /* Adjust gap as needed */
+  }
+    #mainH2 #trackIdContainer {
+  display: flex;
+  align-items: center;
+}
+  .task-icon {
+   width: 20px; /* Adjust icon size as needed */
+  height: auto;
+  margin-left: 4px; /* Adjust spacing as needed */
+    
+  }
+    
+.track-counter {
+  color: green;
+  font-size: 2em;;
+  margin-left: 4px; /* Adjust spacing as needed */
+      padding-left: 50px;
+
+}
     </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMU/uR7CeGmIAG4u1RWgAlRzZP3kdD6LRT8V/5" crossorigin="anonymous">
+ 
 </head>
 <body>
   <h1 id="mainTitle">Fill in the blanks</h1>
   <div id="audioContainer">
-    <h2 id="mainH2">Track <span id="trackId"></span></h2>
-    <audio id="audioPlayer" controls></audio>
+<h2 id="mainH2">
+   <span id="trackIdContainer"><span id="trackId"></span></span>
+</h2>    <audio id="audioPlayer" controls></audio>
   </div>
   <div class="button-container">
-    <button onclick="jumpBackward()"><i class="fas fa-fast-backward"></i></button>
+    
+    <button onclick="jumpBackward()"><i class="fa-solid fa-angles-left"></i></i></button>
     <button onclick="showPrevious()"><i class="fas fa-arrow-left"></i></button>
     <button onclick="togglePlayPause()"><i class="fas fa-play" id="playPauseIcon"></i></button>
     <button onclick="showNext()"><i class="fas fa-arrow-right"></i></button>
-    <button onclick="jumpForward()"><i class="fas fa-fast-forward"></i></button>
+    <button onclick="jumpForward()"><i class="fa-solid fa-angles-right"></i></button>
   </div>
   <div class="track-info" id="trackInfo"><i>Click on any part of the <b>Completion-stats</b>, <b>Track</b>, <b>Fill-in-the-blanks</b> areas to escape <b>full-screen view</b></i></div>
 
@@ -257,32 +283,43 @@ html, body {
     An intellectual product of Do Thanh Hung
   </footer>
   <script>
- const baseUrl = "https://script.google.com/macros/s/AKfycbyVhhYDfbVrrog-R8jVZPN9eHwq-XcR24ZrWBKdgkHNvD_Pt8l2Y8fIqgdIzdepuu7S/exec";
+const baseUrl = "https://script.google.com/macros/s/AKfycbyxyTZLOn023PiABF2U6fyamwokiz7GJrN-Qun1d5TrTBqpx3VOJuK-5XxRaBN8c6uS/exec";
 let values = [];
 let currentIndex = 0;
 let stats = {};
+let uniqueCompletedTasks = [];
+let taskCompletionCounts = [];
 
 fetch(baseUrl)
 .then(res => res.json())
 .then(data => {
     values = data.values.slice(1); // Skip the first row (title row)
-stats = {
-    todayCompleted: data.values[0][17] || 0,       // R1
-    thisWeekCompleted: data.values[1][17] || 0,    // R2
-    thisMonthCompleted: data.values[2][17] || 0,   // R3
-    allCompleted: data.values[3][17] || 0,         // R4
-    todayTotal: data.values[0][14] || 0,           // O1
-    thisWeekTotal: data.values[1][14] || 0,        // O2
-    thisMonthTotal: data.values[2][14] || 0,       // O3
-    allTotal: data.values[3][14] || 0              // O4
-};
+    stats = {
+        todayCompleted: data.values[0][17] || 0,       // R1
+        thisWeekCompleted: data.values[1][17] || 0,    // R2
+        thisMonthCompleted: data.values[2][17] || 0,   // R3
+        allCompleted: data.values[3][17] || 0,         // R4
+        todayTotal: data.values[0][14] || 0,           // O1
+        thisWeekTotal: data.values[1][14] || 0,        // O2
+        thisMonthTotal: data.values[2][14] || 0,       // O3
+        test: data.values[2][19] || 0,       
+        allTotal: data.values[3][14] || 0              // O4
+    };
+
+    uniqueCompletedTasks = data.values.slice(1).map(row => {
+        let task = row[19];
+        return task ? String(task).padStart(2, '0') : '';
+    }); // Column T (index 19), pad values
+
+    taskCompletionCounts = data.values.slice(1).map(row => row[20]); // Column U (index 20)
+
+    console.log('uniqueCompletedTasks:', uniqueCompletedTasks);
+    console.log('taskCompletionCounts:', taskCompletionCounts);
 
     updateStatsBox(); // Update the statistics box
     if (values.length > 0) {
         updateAudioTrack(currentIndex); // Load the first track immediately
-     
     }
- 
 })
 .catch(err => console.error('Error fetching data:', err));
 
@@ -292,38 +329,48 @@ function updateStatsBox() {
     document.getElementById('monthStats').textContent = `${stats.thisMonthCompleted} / ${stats.thisMonthTotal}`;
     document.getElementById('allTimeStats').textContent = `${stats.allCompleted} / ${stats.allTotal}`;
 }
+
 function updateAudioTrack(index) {
-    if (index >= 0 && index < values.length) {
-        const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
-        const audioUrl = values[index][1];
-        const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
-        document.getElementById('trackId').innerText = trackId;
-        document.getElementById('audioPlayer').src = audioUrl;
-        document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
-        resetInput();
-        resetAttemptCount(); // Reset attempt count
-        updatePlayPauseIcon(); // Ensure the play/pause icon is correct
+  if (index >= 0 && index < values.length) {
+    const trackId = String(values[index][0]).padStart(2, '0'); // Convert to string and pad the track ID with a leading zero if necessary
+    const audioUrl = values[index][1];
+    const trackInfo = formatTrackInfo(values[index][4]); // Format the track info
+    document.getElementById('trackId').innerText = trackId;
+    document.getElementById('audioPlayer').src = audioUrl;
+    document.getElementById('trackInfo').innerHTML = trackInfo; // Use innerHTML to allow HTML formatting
+    resetInput();
+    resetAttemptCount(); // Reset attempt count
+    updatePlayPauseIcon(); // Ensure the play/pause icon is correct
 
-        // Auto-focus on the first input box when the play button is clicked for the first time
-        const audioPlayer = document.getElementById('audioPlayer');
-        const firstInputBox = document.querySelector('.inline-input');
-        
-       const focusFirstInputOnPlay = () => {
-            if (firstInputBox) {
-                firstInputBox.focus();
-                  // Scroll the mainH2 element into view
-                const mainH2 = document.getElementById('mainH2');
-                mainH2.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-            // Remove the event listener after the first play
-            audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
-        };
+    const audioPlayer = document.getElementById('audioPlayer');
+    const firstInputBox = document.querySelector('.inline-input');
 
-        audioPlayer.addEventListener('play', focusFirstInputOnPlay);
+    const focusFirstInputOnPlay = () => {
+      if (firstInputBox) {
+        firstInputBox.focus();
+        const mainH2 = document.getElementById('mainH2');
+        mainH2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      audioPlayer.removeEventListener('play', focusFirstInputOnPlay);
+    };
+
+    audioPlayer.addEventListener('play', focusFirstInputOnPlay);
+
+    let mainH2 = document.getElementById("mainH2");
+    let taskIndex = uniqueCompletedTasks.indexOf(trackId);
+
+    if (taskIndex !== -1) {
+      mainH2.innerHTML = `Track <span id="trackIdContainer"><span id="trackId">${trackId}</span> <span class="track-counter">${taskCompletionCounts[taskIndex]}</span> <img src="https://cdn-icons-png.flaticon.com/512/845/845646.png" alt="Completed Task Icon" class="task-icon"> </span>`;
+      mainH2.style.color = 'navy';
+      mainH2.style.fontWeight = 'bold';
+    } else {
+      mainH2.innerHTML = `Track <span id="trackIdContainer"><span id="trackId">${trackId}</span></span>`;
+      mainH2.style.color = '';
+      mainH2.style.fontWeight = '';
     }
+  }
 }
-
-
+    
 // Event listener to track the last focused input box
 document.addEventListener('focusin', (event) => {
     if (event.target.classList.contains('inline-input')) {
@@ -341,7 +388,9 @@ document.getElementById('audioPlayer').addEventListener('pause', () => {
         }
     }
 });
-
+    
+    
+    
 function resetAttemptCount() {
   for (let key in attemptCount) {
     if (attemptCount.hasOwnProperty(key)) {
